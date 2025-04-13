@@ -21,7 +21,7 @@
     <users>
         <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root" groups="root"/>
     </users>
-    <repository sourcetype="mirrorlist" type="rpm-md">
+    <repository repository_gpgcheck="false" sourcetype="mirrorlist" type="rpm-md">
         <source path="https://cdn.amazonlinux.com/al2023/core/mirrors/2023.7.20250331/debuginfo/x86_64/mirror.list"/>
     </repository>
     <packages type="image">
