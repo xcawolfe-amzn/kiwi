@@ -102,7 +102,8 @@ class RepositoryDnf4(RepositoryBase):
         ).unmanaged_file()
 
         self.dnf_args = [
-            '--config', self.runtime_dnf_config_file.name, '-y', '--enableplugin=priorities', '--disableplugin=versionlock'
+            # '--config', self.runtime_dnf_config_file.name, '-y', '--enableplugin=priorities', '--disableplugin=versionlock'
+            '--config', self.runtime_dnf_config_file.name, '-y', 
         ] + self.custom_args
 
         self.command_env = self._create_dnf_runtime_environment()
