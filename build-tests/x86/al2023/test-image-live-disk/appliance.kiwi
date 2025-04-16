@@ -64,23 +64,18 @@
         <package name="grub2"/>
         <package name="grubby"/>
         <package name="kernel"/>
-        <package name="plymouth-theme-charge"/>
-        <package name="grub2-breeze-theme"/>
-        <package name="selinux-policy-targeted"/>
-        <package name="dhclient"/>
+        <package name="selinux-policy"/>
         <package name="glibc-all-langpacks"/>
         <package name="vim"/>
         <package name="tzdata"/>
-        <package name="NetworkManager"/>
-        <package name="btrfs-progs"/>
     </packages>
-    <packages type="image" profiles="Live">
-        <package name="dracut-kiwi-live"/>
-    </packages>
-    <packages type="image" profiles="Disk">
-        <package name="dracut-kiwi-oem-repart"/>
-        <package name="dracut-kiwi-oem-dump"/>
-    </packages>
+    <!-- <packages type="image" profiles="Live"> -->
+    <!--     <package name="dracut-kiwi-live"/> -->
+    <!-- </packages> -->
+    <!-- <packages type="image" profiles="Disk"> -->
+        <!-- <package name="dracut-kiwi-oem-repart"/> -->
+        <!-- <package name="dracut-kiwi-oem-dump"/> -->
+    <!-- </packages> -->
     <packages type="bootstrap">
         <package name="filesystem"/>
         <package name="basesystem"/>
