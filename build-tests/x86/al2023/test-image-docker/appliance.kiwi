@@ -22,11 +22,16 @@
         <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root" groups="root"/>
     </users>
     <!-- <repository priority="1" repository_gpgcheck="false" sourcetype="mirrorlist" type="rpm-md"> -->
+<<<<<<< Updated upstream
     <!--<repository priority="1" repository_gpgcheck="false" sourcetype="mirrorlist" >-->
     <repository priority="1" repository_gpgcheck="false" sourcetype="baseurl" >
         <!--<source path="https://cdn.amazonlinux.com/al2023/core/mirrors/latest/x86_64/mirror.list"/>-->
         <!--<source path="https://cdn.amazonlinux.com/al2023/core/mirrors/latest/x86_64/mirror.list"/>-->
 	<source path="https://cdn.amazonlinux.com/al2023/core/guids/b97cc280a22c10b1346b6f13d611a0db1b1c420f2f5d84f6e5af3f42d82c1ac4/x86_64/"/>
+=======
+    <repository priority="1" repository_gpgcheck="false" sourcetype="mirrorlist" >
+        <source path="https://cdn.amazonlinux.com/al2023/core/mirrors/2023.7.20250331/x86_64/mirror.list"/>
+>>>>>>> Stashed changes
     </repository>
     <packages type="image">
         <package name="selinux-policy"/>
@@ -35,9 +40,15 @@
         <package name="tzdata"/>
     </packages>
     <packages type="bootstrap">
+<<<<<<< Updated upstream
         <!--<package name="filesystem"/>-->
         <!--<package name="basesystem"/>-->
         <!--<package name="system-release"/>-->
+=======
+        <package name="filesystem"/>
+        <package name="basesystem"/>
+        <package name="system-release"/>
+>>>>>>> Stashed changes
         <package name="gcc"/>
     </packages>
 </image>
