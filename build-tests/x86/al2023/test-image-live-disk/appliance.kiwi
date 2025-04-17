@@ -60,6 +60,10 @@
     <repository priority="1" repository_gpgcheck="false" sourcetype="mirrorlist" >
         <source path="https://cdn.amazonlinux.com/al2023/core/mirrors/latest/x86_64/mirror.list"/>
     </repository>
+
+    <repository priority="1" repository_gpgcheck="false" sourcetype="baseurl" >
+        <source path="file:///rpms"/>
+    </repository>
     <packages type="image">
         <package name="grub2"/>
         <package name="grubby"/>
