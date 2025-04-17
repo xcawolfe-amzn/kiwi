@@ -30,7 +30,7 @@ echo "Configure image: [$kiwi_iname]..."
 # Activate services
 #--------------------------------------
 baseInsertService dbus-broker
-baseInsertService NetworkManager
+# baseInsertService NetworkManager
 
 #======================================
 # Setup default target, multi-user
