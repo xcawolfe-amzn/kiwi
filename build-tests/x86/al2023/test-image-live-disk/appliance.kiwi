@@ -67,6 +67,7 @@
     <packages type="image">
         <package name="grub2"/>
         <namedCollection name="onprem"/>
+        <ignore name="*-minimal"/>
         <package name="pciutils"/>
         <package name="gdisk"/>
         <!-- <package name="dracut-modules-growroot"/> -->
