@@ -66,25 +66,29 @@
     </repository>
     <packages type="image">
         <package name="grub2"/>
-        <namedCollection name="onprem"/>
-        <ignore name="*-minimal"/>
-        <package name="pciutils"/>
-        <package name="gdisk"/>
+        <!-- <namedCollection name="onprem"/> -->
+        <!-- <ignore name="*-minimal"/> -->
+        <!-- <package name="pciutils"/> -->
+        <!-- <package name="gdisk"/> -->
         <!-- <package name="dracut-modules-growroot"/> -->
-        <package name="sudo"/>
-        <package name="perl-interpreter"/>
-        <package name="binutils"/>
-        <package name="gzip"/>
+        <package name="awscli"/>
         <!-- <package name="grubby"/> -->
+        <package name="sssd-common">
+        <package name="sssd-kcm">
 
         <package name="grub2-efi-x64-ec2"/>
-        <package name="grub2-pc"/>
+        <package name="grub2-pc-modules"/>
+        <package name="amazon-chrony-config"/>
+        <package name="initscripts"/>
         <package name="kernel"/>
         <package name="kernel-modules-extra"/>
         <package name="tar"/>
         <!-- <package name="gtar"/> -->
         <!-- <package name="selinux-policy"/> -->
         <package name="systemd-networkd"/>
+        <package name="systemd-resolved"/>
+        <package name="zram-generator"/>
+        <package name="zram-generator-defaults"/>
         <package name="tzdata"/>
         <package name="zstd"/>
     </packages>
