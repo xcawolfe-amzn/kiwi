@@ -66,6 +66,9 @@
     </repository>
     <packages type="image">
          <!-- core -->
+        <namedCollection name="core"/>
+        <ignore name="firewalld"/>
+        <package name="system-release"/>
         <package name="grub2"/>
         <!-- <namedCollection name="onprem"/> -->
         <!-- <ignore name="*-minimal"/> -->
@@ -110,8 +113,8 @@
         <!-- <package name="filesystem"/> -->
         <!-- <package name="basesystem"/> -->
         <!-- <package name="system-release"/> -->
-        <namedCollection name="core"/>
-        <ignore name="firewalld"/>
-        <package name="system-release"/>
+        <!-- <namedCollection name="core"/> -->
+        <!-- <ignore name="firewalld"/> -->
+        <!-- <package name="system-release"/> -->
     </packages>
 </image>
