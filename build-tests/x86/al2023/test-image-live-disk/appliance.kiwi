@@ -66,14 +66,16 @@
     </repository>
     <packages type="image">
         <package name="grub2"/>
-        <namedCollection name="onprem-minimal"/>
+        <namedCollection name="onprem"/>
         <package name="pciutils"/>
         <package name="gdisk"/>
         <!-- <package name="dracut-modules-growroot"/> -->
         <package name="sudo"/>
-        <!-- <package name="dhclient"/> -->
+        <package name="perl-interpreter"/>
+        <package name="binutils"/>
         <package name="gzip"/>
         <!-- <package name="grubby"/> -->
+
         <package name="grub2-efi-x64-ec2"/>
         <package name="grub2-pc"/>
         <package name="kernel"/>
