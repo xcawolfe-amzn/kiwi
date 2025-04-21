@@ -112,8 +112,8 @@
     <packages type="bootstrap">
         <!-- <package name="filesystem"/> -->
         <!-- <package name="basesystem"/> -->
-        <!-- <package name="system-release"/> -->
-        <!-- <namedCollection name="core"/> -->
+        <package name="system-release"/>
+        <namedCollection name="core"/>
         <!-- <ignore name="firewalld"/> -->
         <!-- <package name="system-release"/> -->
     </packages>
