@@ -68,7 +68,8 @@
         <package name="grub2"/>
         <package name="grubby"/>
         <package name="kernel"/>
-        <package name="selinux-policy"/>
+        <package name="tar"/>
+        <!-- <package name="selinux-policy"/> -->
         <package name="glibc-all-langpacks"/>
         <package name="vim"/>
         <package name="tzdata"/>
@@ -83,8 +84,8 @@
     <packages type="bootstrap">
         <package name="filesystem"/>
         <package name="basesystem"/>
-        <package name="grub2-efi-x64-modules"/>
-        <package name="grub2-efi"/>
+        <package name="grub2-pc-modules"/>
+        <package name="grub2-efi-x64-ec2"/>
         <package name="system-release"/>
     </packages>
 </image>
