@@ -30,7 +30,7 @@
         </type>
     </preferences>
     <preferences profiles="Virtual">
-        <type image="oem" filesystem="ext4" kernelcmdline="console=ttyS0" firmware="uefi" format="qcow2"  rootfs_label="fedora" bootpartition="true" bootfilesystem="ext4">
+        <type image="oem" filesystem="xfs" kernelcmdline="console=ttyS0" firmware="uefi" format="qcow2"  rootfs_label="amzn2023" bootpartition="true" bootfilesystem="xfs">
             <systemdisk name="amzn2023">
                 <volume name="@root=root"/>
                 <volume name="home" parent="/"/>
