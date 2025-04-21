@@ -65,12 +65,12 @@
         <source path="file:///rpms"/>
     </repository>
     <packages type="image">
-        <package name="grub"/>
+        <package name="grub2"/>
         <package name="pciutils"/>
         <package name="gdisk"/>
-        <package name="dracut-modules-growroot"/>
+        <!-- <package name="dracut-modules-growroot"/> -->
         <package name="sudo"/>
-        <package name="dhclient"/>
+        <!-- <package name="dhclient"/> -->
         <package name="gzip"/>
         <!-- <package name="grubby"/> -->
         <package name="grub2-efi-x64-ec2"/>
