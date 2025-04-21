@@ -70,12 +70,18 @@
         <package name="grub2-efi-x64-modules"/>
         <package name="grub2-efi-x64"/>
         <package name="kernel"/>
+        <package name="grub2-pc-modules"/>
+        <package name="zram-generator"/>
+        <package name="zram-generator-default"/>
         <package name="tar"/>
         <!-- <package name="gtar"/> -->
         <!-- <package name="selinux-policy"/> -->
+        <package name="systemd-resolved"/>
+        <package name="initscripts"/>
         <package name="glibc-all-langpacks"/>
         <package name="vim"/>
         <package name="tzdata"/>
+        <namedCollection name="ami"/>
     </packages>
     <packages type="image" profiles="Live">
         <package name="dracut-kiwi-live"/>
@@ -90,5 +96,6 @@
         <!-- <package name="system-release"/> -->
         <package name="system-release"/>
         <namedCollection name="core"/>
+        <ignore name="firewalld"/>
     </packages>
 </image>
