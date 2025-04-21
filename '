@@ -65,7 +65,6 @@
         <source path="file:///rpms"/>
     </repository>
     <packages type="image">
-         <!-- core -->
         <package name="grub2"/>
         <!-- <namedCollection name="onprem"/> -->
         <!-- <ignore name="*-minimal"/> -->
@@ -74,8 +73,8 @@
         <!-- <package name="dracut-modules-growroot"/> -->
         <package name="awscli"/>
         <!-- <package name="grubby"/> -->
-        <package name="sssd-common"/>
-        <package name="sssd-kcm"/>
+        <package name="sssd-common">
+        <package name="sssd-kcm">
 
         <package name="grub2-efi-x64-ec2"/>
         <package name="grub2-pc-modules"/>
@@ -87,17 +86,9 @@
         <!-- <package name="gtar"/> -->
         <!-- <package name="selinux-policy"/> -->
         <package name="systemd-networkd"/>
-        <package name="systemd-resolved"/>
         <package name="zram-generator"/>
-        <package name="zram-generator-defaults"/>
         <package name="tzdata"/>
         <package name="zstd"/>
-        <!-- core -->
-        <!-- onprem-minimal -->
-        <namedCollection name="onprem-minimal"/>
-        <!-- onprem-minimal -->
-        <!-- onprem -->
-        <namedCollection name="onprem"/>
     </packages>
     <packages type="image" profiles="Live">
         <package name="dracut-kiwi-live"/>
