@@ -10,9 +10,9 @@
         <specification>Amazon Appliance</specification>
     </description>
     <profiles>
-        <profile name="Live" description="Live image of Amazon"/>
+        <!-- <profile name="Live" description="Live image of Amazon"/> -->
         <profile name="Virtual" description="Virtual image of Amazon"/>
-        <profile name="Disk" description="OEM image of Amazon"/>
+        <!-- <profile name="Disk" description="OEM image of Amazon"/> -->
     </profiles>
     <preferences>
         <version>2.0.0</version>
@@ -24,11 +24,11 @@
         <timezone>UTC</timezone>
         <rpm-check-signatures>false</rpm-check-signatures>
     </preferences>
-    <preferences profiles="Live">
-        <type image="iso" flags="overlay" firmware="uefi" hybridpersistent_filesystem="ext4" hybridpersistent="true" kernelcmdline="console=ttyS0">
-            <bootloader name="grub2" console="serial" timeout="10"/>
-        </type>
-    </preferences>
+    <!-- <preferences profiles="Live"> -->
+    <!--     <type image="iso" flags="overlay" firmware="uefi" hybridpersistent_filesystem="ext4" hybridpersistent="true" kernelcmdline="console=ttyS0"> -->
+    <!--         <bootloader name="grub2" console="serial" timeout="10"/> -->
+    <!--     </type> -->
+    <!-- </preferences> -->
     <preferences profiles="Virtual">
         <type image="oem" eficsm="false" filesystem="xfs" kernelcmdline="console=ttyS0,115200n8 console=tty0 rd.emergency=poweroff rd.shell=0 selinux=1 security=selinux quiet" firmware="uefi" format="qcow2"  rootfs_label="amzn2023" bootpartition="true" bootfilesystem="xfs">
             <systemdisk name="amzn2023">
@@ -42,18 +42,18 @@
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences profiles="Disk">
-        <type image="oem" filesystem="ext4" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=ttyS0">
-            <bootloader name="grub2" console="serial" timeout="10"/>
-            <oemconfig>
-                <oem-systemsize>2048</oem-systemsize>
-                <oem-unattended>true</oem-unattended>
-                <oem-swap>true</oem-swap>
-                <oem-swapsize>200</oem-swapsize>
-                <oem-multipath-scan>false</oem-multipath-scan>
-            </oemconfig>
-        </type>
-    </preferences>
+    <!-- <preferences profiles="Disk"> -->
+    <!--     <type image="oem" filesystem="ext4" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=ttyS0"> -->
+    <!--         <bootloader name="grub2" console="serial" timeout="10"/> -->
+    <!--         <oemconfig> -->
+    <!--             <oem-systemsize>2048</oem-systemsize> -->
+    <!--             <oem-unattended>true</oem-unattended> -->
+    <!--             <oem-swap>true</oem-swap> -->
+    <!--             <oem-swapsize>200</oem-swapsize> -->
+    <!--             <oem-multipath-scan>false</oem-multipath-scan> -->
+    <!--         </oemconfig> -->
+    <!--     </type> -->
+    <!-- </preferences> -->
     <users>
         <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root" groups="root"/>
     </users>
@@ -94,18 +94,18 @@
         <package name="zstd"/>
         <!-- core -->
         <!-- onprem-minimal -->
-        <namedCollection name="onprem-minimal"/>
+        <!-- <namedCollection name="onprem-minimal"/> -->
         <!-- onprem-minimal -->
         <!-- onprem -->
-        <namedCollection name="onprem"/>
+        <!-- <namedCollection name="onprem"/> -->
     </packages>
-    <packages type="image" profiles="Live">
-        <package name="dracut-kiwi-live"/>
-    </packages>
-    <packages type="image" profiles="Disk">
-        <package name="dracut-kiwi-oem-repart"/>
-        <package name="dracut-kiwi-oem-dump"/>
-    </packages>
+    <!-- <packages type="image" profiles="Live"> -->
+    <!--     <package name="dracut-kiwi-live"/> -->
+    <!-- </packages> -->
+    <!-- <packages type="image" profiles="Disk"> -->
+    <!--     <package name="dracut-kiwi-oem-repart"/> -->
+    <!--     <package name="dracut-kiwi-oem-dump"/> -->
+    <!-- </packages> -->
     <packages type="bootstrap">
         <!-- <package name="filesystem"/> -->
         <!-- <package name="basesystem"/> -->
