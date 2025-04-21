@@ -3,11 +3,11 @@
 <!-- The line below is required in order to use the multibuild OBS features -->
 <!-- OBS-Profiles: @BUILD_FLAVOR@ -->
 
-<image schemaversion="7.5" name="kiwi-test-image-live-disk">
+<image schemaversion="7.5" name="amzn2023-kiwi-test-image-live-disk">
     <description type="system">
-        <author>Marcus Schaefer</author>
-        <contact>ms@suse.com</contact>
-        <specification>Fedora Appliance</specification>
+        <author>Caleb Wolfe</author>
+        <contact>xcawolfe@amazon.com</contact>
+        <specification>Amazon Appliance</specification>
     </description>
     <profiles>
         <profile name="Live" description="Live image of Fedora"/>
@@ -17,8 +17,8 @@
     <preferences>
         <version>2.0.0</version>
         <packagemanager>dnf4</packagemanager>
-        <bootsplash-theme>charge</bootsplash-theme>
-        <bootloader-theme>breeze</bootloader-theme>
+        <!-- <bootsplash-theme>charge</bootsplash-theme> -->
+        <!-- <bootloader-theme>breeze</bootloader-theme> -->
         <locale>en_US</locale>
         <keytable>us</keytable>
         <timezone>UTC</timezone>
