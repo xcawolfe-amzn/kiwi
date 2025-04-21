@@ -35,6 +35,7 @@
                 <volume name="@root=root"/>
                 <volume name="home" parent="/"/>
                 <volume name="var" parent="/"/>
+                <volume name="boot" parent="/"/>
             </systemdisk>
             <oemconfig>
                 <oem-resize>false</oem-resize>
@@ -67,6 +68,8 @@
     <packages type="image">
         <package name="grub2"/>
         <package name="grubby"/>
+        <package name="grub2-efi-x64-modules"/>
+        <package name="grub2-efi-x64"/>
         <package name="kernel"/>
         <package name="tar"/>
         <!-- <package name="selinux-policy"/> -->
@@ -84,8 +87,6 @@
     <packages type="bootstrap">
         <package name="filesystem"/>
         <package name="basesystem"/>
-        <package name="grub2-efi-x64-modules"/>
-        <package name="grub2-efi-x64"/>
         <package name="system-release"/>
     </packages>
 </image>
