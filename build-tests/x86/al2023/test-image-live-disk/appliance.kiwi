@@ -118,7 +118,7 @@
         <package name="system-release"/>
         <namedCollection name="core"/>
         <namedCollection name="util-linux"/>
-        <!-- <ignore name="firewalld"/> -->
+        <ignore name="firewalld"/>
         <!-- <package name="system-release"/> -->
     </packages>
 </image>
