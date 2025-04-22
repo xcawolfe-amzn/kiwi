@@ -70,6 +70,7 @@
         <ignore name="firewalld"/>
         <package name="system-release"/>
         <package name="grub2"/>
+        <package name="glibc-all-langpacks"/>
         <!-- <namedCollection name="onprem"/> -->
         <!-- <ignore name="*-minimal"/> -->
         <!-- <package name="pciutils"/> -->
