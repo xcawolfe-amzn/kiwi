@@ -127,6 +127,7 @@
         <package name="grub2-pc-modules"/>
         <package name="grub2-pc"/>
         <ignore name="firewalld"/>
+        <package name="lvm2"/>
         <!-- <package name="system-release"/> -->
     </packages>
 </image>
