@@ -30,7 +30,7 @@
     <!--     </type> -->
     <!-- </preferences> -->
     <preferences profiles="Virtual">
-        <type image="oem" eficsm="false" filesystem="xfs" kernelcmdline="console=ttyS0,115200n8 console=tty0 rd.emergency=poweroff rd.shell=0 selinux=1 security=selinux quiet" firmware="uefi" format="qcow2"  rootfs_label="amzn2023" bootpartition="true" bootfilesystem="xfs">
+        <type image="oem" eficsm="false" filesystem="xfs" kernelcmdline="console=ttyS0,115200n8 console=tty0 rd.emergency=poweroff rd.shell=0 selinux=1 security=selinux quiet" firmware="bios" format="qcow2"  rootfs_label="amzn2023" bootpartition="true" bootfilesystem="xfs">
             <systemdisk name="amzn2023">
                 <volume name="@root=root"/>
                 <volume name="home" parent="/"/>
