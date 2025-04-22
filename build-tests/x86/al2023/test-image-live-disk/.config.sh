@@ -18,23 +18,23 @@
 #======================================
 # Functions...
 #--------------------------------------
-test -f /.kconfig && . /.kconfig
-test -f /.profile && . /.profile
+# test -f /.kconfig && . /.kconfig
+# test -f /.profile && . /.profile
 
 #======================================
 # Greeting...
 #--------------------------------------
-echo "Configure image: [$kiwi_iname]..."
+# echo "Configure image: [$kiwi_iname]..."
 
 #======================================
 # Activate services
 #--------------------------------------
-baseInsertService dbus-broker
+# baseInsertService dbus-broker
 # baseInsertService NetworkManager
 
 #======================================
 # Setup default target, multi-user
 #--------------------------------------
-baseSetRunlevel 3
+# baseSetRunlevel 3
 
 exit 0
