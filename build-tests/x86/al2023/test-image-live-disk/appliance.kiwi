@@ -83,7 +83,7 @@
 
         <package name="grub2-efi-x64-ec2"/>
         <package name="grub2-efi-x64-modules"/>
-        <package name="grub2-pc-modules"/
+        <package name="grub2-pc-modules"/>
         <package name="amazon-chrony-config"/>
         <package name="initscripts"/>
         <package name="kernel"/>
