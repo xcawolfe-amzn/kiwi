@@ -79,13 +79,15 @@
         <ignore name="curl-minimal"/>
         <ignore name="libcurl-minimal"/>
         <ignore name="gnupg2-minimal"/>
+        <ignore name="gnupg2-minimal"/>
+        <ignore name="amazon-linux-repo-s3"/>
         <!-- dont install --> 
         <package name="grub2"/>
         <package name="grub2-pc-modules"/>
         <package name="grub2-pc"/>
         <package name="grub2-efi-x64-ec2"/>
         <package name="grub2-efi-x64-modules"/>
-        <package name="glibc-all-langpacks"/>
+
         <!-- <package name="initscripts"/> -->
         <!-- <namedCollection name="onprem"/> -->
         <!-- <ignore name="*-minimal"/> -->
