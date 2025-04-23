@@ -79,7 +79,6 @@
         <ignore name="curl-minimal"/>
         <ignore name="libcurl-minimal"/>
         <ignore name="gnupg2-minimal"/>
-        <package name="system-release"/>
         <package name="lvm2"/>
         <package name="grub2"/>
         <package name="grub2-pc-modules"/>
