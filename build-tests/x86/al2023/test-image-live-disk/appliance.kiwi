@@ -123,6 +123,8 @@
 <package name="grub2-pc"/>
 <package name="grub2-efi-x64-ec2"/>
 <package name="grub2-efi-x64-modules"/>
+<package name="grub2-emu-modules"/>
+<package name="grub2-emu"/>
 <ignore name="firewalld"/>
 <package name="lvm2"/>
 <!-- <package name="system-release"/> -->
