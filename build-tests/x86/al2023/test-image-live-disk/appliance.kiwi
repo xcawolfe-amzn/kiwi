@@ -68,8 +68,8 @@
 <packages type="image">
 <package name="system-release"/>
 <namedCollection name="core"/>
-<!-- <namedCollection name="onprem-minimal"/> -->
-<!-- <namedCollection name="onprem"/> -->
+<namedCollection name="onprem-minimal"/>
+<namedCollection name="onprem"/>
 <!-- <package name="systemd"/> -->
 <package name="kernel"/>
 <package name="kernel-modules-extra"/>
@@ -112,7 +112,7 @@
 <package name="zram-generator-defaults"/>
 <package name="tzdata"/>
 <package name="zstd"/>
-<namedCollection name="ami"/>
+<!-- <namedCollection name="ami"/> -->
 </packages>
 <packages type="bootstrap">
 <!-- <package name="filesystem"/> -->
