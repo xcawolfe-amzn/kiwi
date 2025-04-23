@@ -65,10 +65,12 @@
         <source path="file:///rpms"/>
     </repository>
     <packages type="image">
-         <!-- core -->
+         
+        <package name="system-release"/>
         <namedCollection name="core"/>
         <namedCollection name="onprem-minimal"/>
         <namedCollection name="onprem"/>
+        <package name="systemd"/>
         <package name="kernel"/>
         <package name="kernel-modules-extra"/>
         <package name="kernel-modules-extra-common"/>
