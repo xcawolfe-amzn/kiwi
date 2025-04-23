@@ -117,7 +117,7 @@
         <!-- <package name="basesystem"/> -->
         <package name="system-release"/>
         <namedCollection name="core"/>
-        <package name="grub3-pc-modules"/>
+        <package name="grub2-pc-modules"/>
         <package name="grub2-pc"/>
         <package name="grub2-efi-x64-ec2"/>
         <package name="grub2-efi-x64-modules"/>
