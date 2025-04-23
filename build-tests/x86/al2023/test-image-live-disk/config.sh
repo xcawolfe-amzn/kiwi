@@ -36,5 +36,5 @@
 # Setup default target, multi-user
 #--------------------------------------
 # baseSetRunlevel 3
-modprobe loop
+setenforce Permissive
 exit 0
