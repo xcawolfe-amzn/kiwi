@@ -75,10 +75,10 @@
         <package name="kernel-modules-extra-common"/>
         <!-- dont install --> 
         <ignore name="firewalld"/>
-        <!-- <ignore name="vim-minimal"/> -->
-        <!-- <ignore name="curl-minimal"/> -->
-        <!-- <ignore name="libcurl-minimal"/> -->
-        <!-- <ignore name="gnupg2-minimal"/> -->
+        <ignore name="vim-minimal"/>
+        <ignore name="curl-minimal"/>
+        <ignore name="libcurl-minimal"/>
+        <ignore name="gnupg2-minimal"/>
         <!-- dont install --> 
         <package name="grub2"/>
         <package name="grub2-pc-modules"/>
