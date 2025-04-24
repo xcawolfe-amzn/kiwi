@@ -47,7 +47,7 @@
         <source path="file:///rpms"/>
 </repository>
 
-<packages type="image" profile="ami">
+<packages type="image" profiles="ami">
         <namedCollection name="ami"/>
         <package name="tar"/>
         <package name="awscli"/>
@@ -62,12 +62,12 @@
 </packages>
 
 <!-- on prem -->
-<packages type="bootstrap" profile="onprem">
+<packages type="bootstrap" profiles="onprem">
         <package name="grub2-pc-modules"/>
         <package name="grub2-pc"/>
 </packages>
 
-<packages type="image" profile="onprem">
+<packages type="image" profiles="onprem">
         <namedCollection name="onprem-minimal"/>
         <namedCollection name="onprem"/>
         <package name="kernel-modules-extra"/>
