@@ -26,7 +26,7 @@
         <rpm-check-signatures>false</rpm-check-signatures>
 </preferences>
 <preferences>
-        <type image="oem"  filesystem="xfs" efipartsize="4096"  kernelcmdline="console=ttyS0 console=ttyS0,115200n8" firmware="efi" format="qcow2">
+        <type image="oem"  filesystem="xfs" efipartsize="4096"  kernelcmdline="console=ttyS0 console=ttyS0,115200n8" firmware="uefi" format="qcow2">
         <systemdisk name="amzn2023">
                 <volume name="@root=root"/>
                 <volume name="home" parent="/"/>
