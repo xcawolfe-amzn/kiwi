@@ -12,6 +12,8 @@
 <profiles>
         <profile name="ami" description="Live image of Amazon"/>
         <profile name="onprem" description="OnPrem of Amazon"/>
+        <profile name="x86_64" description="x86_64 of Amazon"/>
+        <profile name="aarch64" description="ARM builds of Amazon"/>
 </profiles>
 <preferences>
         <version>2.0.0</version>
@@ -47,7 +49,9 @@
         <source path="file:///rpms"/>
 </repository>
 
-<packages type="image" profiles="ami">
+
+<!-- ami -->
+<packages type="image" profiles="ami,x86_64,aarch64">
         <namedCollection name="ami"/>
         <package name="tar"/>
         <package name="awscli"/>
@@ -60,16 +64,15 @@
         <package name="amazon-chrony-config"/>
         <package name="initscripts"/>
 </packages>
+<!-- ami -->
 
 <!-- on prem -->
-<packages type="bootstrap" profiles="onprem">
-        <package name="grub2-pc-modules"/>
+<packages type="bootstrap" profiles="onprem,x86_64">
         <package name="grub2-pc"/>
 </packages>
 
-<packages type="image" profiles="onprem">
+<packages type="image" profiles="onprem-minimal,onprem,x86_64,aarch64">
         <namedCollection name="onprem-minimal"/>
-        <namedCollection name="onprem"/>
         <package name="kernel-modules-extra"/>
         <package name="zstd"/>
         <package name="systemd-networkd"/>
@@ -80,6 +83,11 @@
         <ignore name="gnupg2-minimal"/>
          <!-- dont install --> 
 </packages>
+<packages type="image" profiles="onprem,x86_64,aarch64">
+        <namedCollection name="onprem"/>
+        <package name="perl-interpreter"/>
+        <package name="binutils"/>
+</packages>
 <!-- on prem -->
 
 <!-- global for all images -->
@@ -87,27 +95,32 @@
         <package name="system-release"/>
         <namedCollection name="core"/>
         <package name="kernel"/>
+        <package name="awscli"/>
+        <package name="tar"/>
+        <package name="sssd-common"/>
+        <package name="sssd-kcm"/>
         <!-- dont install --> 
         <ignore name="firewalld"/>
         <ignore name="amazon-linux-repo-s3"/>
         <!-- dont install --> 
-        <package name="grub2"/>
-        <package name="grub2-pc"/>
-        <package name="grub2-efi-x64-modules"/>
-        <package name="grub2-emu-modules"/>
-        <package name="grub2-emu"/>
-        <package name="tar"/>
-        <package name="tzdata"/>
 </packages>
 
 <packages type="bootstrap">
         <package name="system-release"/>
         <namedCollection name="core"/>
-        <package name="grub2-efi-x64-ec2"/>
-        <package name="grub2-efi-x64-modules"/>
         <ignore name="firewalld"/>
-        <!-- <package name="system-release"/> -->
 </packages>
 <!-- global for all images -->
+
+<packages type="bootstrap" profiles="x86_64">
+        <package name="grub2-efi-x64-ec2"/>
+        <package name="grub2-efi-x64-modules"/>
+</packages>
+
+
+<packages type="bootstrap" profiles="aarch64">
+        <package name="grub2-efi-aa64-ec2"/>
+        <package name="grub2-efi-aa64-modules"/>
+</packages>
 
 </image>
