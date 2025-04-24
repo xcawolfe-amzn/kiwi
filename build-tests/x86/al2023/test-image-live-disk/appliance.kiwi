@@ -12,8 +12,10 @@
 <profiles>
         <profile name="ami" description="Live image of Amazon"/>
         <profile name="onprem" description="OnPrem of Amazon"/>
-        <profile name="x86_64" description="x86_64 of Amazon"/>
-        <profile name="aarch64" description="ARM builds of Amazon"/>
+        <profile name="ami-x86_64" description="x86_64 of Amazon AMIs"/>
+        <profile name="ami-aarch64" description="ARM builds of Amazon AMIs"/>
+        <profile name="onprem-aarch64" description="ARM builds of Amazon VMs"/>
+        <profile name="onprem-x86_64" description="ARM builds of Amazon VMs"/>
 </profiles>
 <preferences>
         <version>2.0.0</version>
