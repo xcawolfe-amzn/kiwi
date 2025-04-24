@@ -62,7 +62,7 @@
         <package name="systemd-resolved"/>
         <package name="amazon-chrony-config"/>
         <package name="initscripts"/>
-<packages/>
+</packages>
 
 <!-- on prem -->
 <packages type="bootstrap" profile="onprem">
