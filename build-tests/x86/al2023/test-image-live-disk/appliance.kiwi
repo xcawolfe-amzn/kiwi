@@ -78,12 +78,6 @@
         <package name="kernel-modules-extra"/>
         <package name="zstd"/>
         <package name="systemd-networkd"/>
-         <!-- dont install --> 
-        <ignore name="vim-minimal"/>
-        <ignore name="curl-minimal"/>
-        <ignore name="libcurl-minimal"/>
-        <ignore name="gnupg2-minimal"/>
-         <!-- dont install --> 
 </packages>
 <packages type="image" profiles="onprem,x86_64,aarch64">
         <namedCollection name="onprem"/>
@@ -104,6 +98,10 @@
         <!-- dont install --> 
         <ignore name="firewalld"/>
         <ignore name="amazon-linux-repo-s3"/>
+        <ignore name="vim-minimal"/>
+        <ignore name="curl-minimal"/>
+        <ignore name="libcurl-minimal"/>
+        <ignore name="gnupg2-minimal"/>
         <!-- dont install --> 
 </packages>
 
