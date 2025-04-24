@@ -5,27 +5,22 @@
 
 <image schemaversion="7.5" name="amzn2023-kiwi-test-image-live-disk">
 <description type="system">
-<author>Caleb Wolfe</author>
-<contact>xcawolfe@amazon.com</contact>
-<specification>Amazon Appliance</specification>
+        <author>Caleb Wolfe</author>
+        <contact>xcawolfe@amazon.com</contact>
+        <specification>Amazon Appliance</specification>
 </description>
 <profiles>
         <profile name="ami" description="Live image of Amazon"/>
         <profile name="onprem" description="OnPrem of Amazon"/>
 </profiles>
 <preferences>
-<version>2.0.0</version>
-<packagemanager>dnf4</packagemanager>
-<locale>en_US</locale>
-<keytable>us</keytable>
-<timezone>UTC</timezone>
-<rpm-check-signatures>false</rpm-check-signatures>
+        <version>2.0.0</version>
+        <packagemanager>dnf4</packagemanager>
+        <locale>en_US</locale>
+        <keytable>us</keytable>
+        <timezone>UTC</timezone>
+        <rpm-check-signatures>false</rpm-check-signatures>
 </preferences>
-<!-- <preferences profiles="Live"> -->
-<!--     <type image="iso" flags="overlay" firmware="uefi" hybridpersistent_filesystem="ext4" hybridpersistent="true" kernelcmdline="console=ttyS0"> -->
-<!--         <bootloader name="grub2" console="serial" timeout="10"/> -->
-<!--     </type> -->
-<!-- </preferences> -->
 <preferences>
         <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0" firmware="efi" format="qcow2"  rootfs_label="amzn2023" >
         <systemdisk name="amzn2023">
@@ -39,15 +34,17 @@
         <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
 </preferences>
+
 <users>
         <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root" groups="root"/>
 </users>
+
 <repository priority="2" repository_gpgcheck="false" sourcetype="mirrorlist" >
         <source path="https://cdn.amazonlinux.com/al2023/core/mirrors/latest/x86_64/mirror.list"/>
 </repository>
 
-<repository priority="1" repository_gpgcheck="false" sourcetype="baseurl" >
-<source path="file:///rpms"/>
+<repository priority="1" repository_gpgcheck="false" sourcetype="baseurl">
+        <source path="file:///rpms"/>
 </repository>
 
 <packages type="image" profile="ami">
@@ -69,6 +66,7 @@
         <package name="grub2-pc-modules"/>
         <package name="grub2-pc"/>
 </packages>
+
 <packages type="image" profile="onprem">
         <namedCollection name="onprem-minimal"/>
         <namedCollection name="onprem"/>
@@ -81,7 +79,7 @@
         <ignore name="libcurl-minimal"/>
         <ignore name="gnupg2-minimal"/>
          <!-- dont install --> 
-<packages/>
+</packages>
 <!-- on prem -->
 
 <!-- global for all images -->
@@ -101,6 +99,7 @@
         <package name="tar"/>
         <package name="tzdata"/>
 </packages>
+
 <packages type="bootstrap">
         <package name="system-release"/>
         <namedCollection name="core"/>
