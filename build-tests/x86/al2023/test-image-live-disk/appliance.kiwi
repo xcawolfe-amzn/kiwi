@@ -28,14 +28,12 @@
 <preferences>
         <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2">
         <systemdisk name="amzn2023">
-                <volume name="@root=root"/>
-                <volume name="home" parent="/"/>
-                <volume name="var" parent="/"/>
+                <volume name="@root"/>
         </systemdisk>
         <oemconfig>
                 <oem-resize>false</oem-resize>
         </oemconfig>
-        <bootloader name="grub2" console="serial" timeout="0"/>
+        <bootloader  name="grub2" console="serial" timeout="0"/>
         </type>
 </preferences>
 
