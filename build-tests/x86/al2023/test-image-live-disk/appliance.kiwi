@@ -26,7 +26,7 @@
         <rpm-check-signatures>false</rpm-check-signatures>
 </preferences>
 <preferences>
-        <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2">
+        <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" devicepersistency="by-label">
         <systemdisk name="amzn2023">
                 <volume name="@root"/>
         </systemdisk>
