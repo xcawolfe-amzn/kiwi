@@ -32,7 +32,7 @@
         <!--         <volume name="@root"/> -->
         <!-- </systemdisk> -->
         <partitions>
-            <partition name="root" size="4G" mountpoint="/" filesystem="xfs"/>
+            <partition  size="4G" mountpoint="/" filesystem="xfs"/>
         </partitions>
         <oemconfig>
                 <oem-resize>false</oem-resize>
