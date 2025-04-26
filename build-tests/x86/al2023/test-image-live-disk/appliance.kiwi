@@ -27,10 +27,6 @@
 </preferences>
 <preferences>
         <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" >
-        <!-- <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" > -->
-        <!-- <systemdisk name="amzn2023"> -->
-        <!--         <volume name="@root"/> -->
-        <!-- </systemdisk> -->
         <oemconfig>
                 <oem-resize>false</oem-resize>
         </oemconfig>
@@ -69,23 +65,6 @@
 </packages>
 <!-- ami -->
 
-<!-- on prem -->
-<packages type="bootstrap" profiles="onprem,x86_64">
-        <package name="grub2-pc"/>
-</packages>
-
-<packages type="image" profiles="onprem-minimal,onprem,x86_64,aarch64">
-        <namedCollection name="onprem-minimal"/>
-        <package name="kernel-modules-extra"/>
-        <package name="zstd"/>
-        <package name="systemd-networkd"/>
-</packages>
-<packages type="image" profiles="onprem,x86_64,aarch64">
-        <namedCollection name="onprem"/>
-        <package name="perl-interpreter"/>
-        <package name="binutils"/>
-</packages>
-<!-- on prem -->
 
 <!-- global for all images -->
 <packages type="image">
