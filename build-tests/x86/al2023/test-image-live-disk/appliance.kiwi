@@ -31,9 +31,6 @@
         <!-- <systemdisk name="amzn2023"> -->
         <!--         <volume name="@root"/> -->
         <!-- </systemdisk> -->
-        <partitions>
-            <partition  size="4G" mountpoint="/" filesystem="xfs"/>
-        </partitions>
         <oemconfig>
                 <oem-resize>false</oem-resize>
         </oemconfig>
