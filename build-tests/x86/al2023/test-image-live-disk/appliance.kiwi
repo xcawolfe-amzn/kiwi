@@ -26,7 +26,7 @@
         <rpm-check-signatures>false</rpm-check-signatures>
 </preferences>
 <preferences>
-        <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" >
+        <type image="oem" standalone_integrity="false" filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" verity_blocks="1" embed_verity_metadata="true" >
         <!-- <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" > -->
         <!-- <systemdisk name="amzn2023"> -->
         <!--         <volume name="@root"/> -->
@@ -94,6 +94,7 @@
         <package name="kernel"/>
         <package name="awscli"/>
         <package name="tar"/>
+        <package name="veritysetup"/>
         <package name="sssd-common"/>
         <package name="sssd-kcm"/>
         <!-- dont install --> 
@@ -108,6 +109,7 @@
 
 <packages type="bootstrap">
         <package name="system-release"/>
+        <package name="veritysetup"/>
         <namedCollection name="core"/>
         <ignore name="firewalld"/>
 </packages>
