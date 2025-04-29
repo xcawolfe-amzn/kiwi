@@ -26,7 +26,7 @@
         <rpm-check-signatures>false</rpm-check-signatures>
 </preferences>
 <preferences>
-        <type image="oem" standalone_integrity="false" filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" verity_blocks="1" embed_verity_metadata="true" >
+        <type image="oem" standalone_integrity="false" filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" verity_blocks="1" embed_verity_metadata="false" >
         <!-- <type image="oem"  filesystem="xfs" kernelcmdline="console=ttyS0 console=ttyS0,115200n8 nvme_core.io_timeout=4294967295" bootpartition="true" firmware="efi" format="qcow2" > -->
         <!-- <systemdisk name="amzn2023"> -->
         <!--         <volume name="@root"/> -->
