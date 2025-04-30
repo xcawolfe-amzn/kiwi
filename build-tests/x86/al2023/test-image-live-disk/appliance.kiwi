@@ -33,7 +33,7 @@
         <!--         <volume name="@root"/> -->
         <!-- </systemdisk> -->
         <partitions>
-            <partition name="verity" size="100" mountpoint="/etc/verity" filesystem="ext4"/>
+            <partition name="verity" size="1G" mountpoint="/verity" filesystem="ext4"/>
         </partitions>
         <oemconfig>
                 <oem-resize>false</oem-resize>
@@ -69,6 +69,7 @@
         <package name="zram-generator-defaults"/>
         <package name="systemd-resolved"/>
         <package name="amazon-chrony-config"/>
+        <package name="lvm2"/>
         <package name="initscripts"/>
 </packages>
 <!-- ami -->

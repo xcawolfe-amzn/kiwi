@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir /verity
 #================
 # FILE          : config.sh
 #----------------
