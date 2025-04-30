@@ -32,9 +32,9 @@
         <!-- <systemdisk name="amzn2023"> -->
         <!--         <volume name="@root"/> -->
         <!-- </systemdisk> -->
-        <partitions>
-            <partition name="verity" size="1G" mountpoint="/verity" filesystem="ext4"/>
-        </partitions>
+        <!-- <partitions> -->
+        <!--     <partition name="verity" size="1G" mountpoint="/verity" filesystem="ext4"/> -->
+        <!-- </partitions> -->
         <oemconfig>
                 <oem-resize>false</oem-resize>
         </oemconfig>
