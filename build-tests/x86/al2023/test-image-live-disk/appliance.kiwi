@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- The line below is required in order to use the multibuild OBS features -->
+<!-- OBS-Profiles: @BUILD_FLAVOR@ -->
+
+<image schemaversion="7.5" name="amzn2023-kiwi-test-image-live-disk">
+<description type="system">
+        <author>Caleb Wolfe</author>
+        <contact>xcawolfe@amazon.com</contact>
+        <specification>Amazon Appliance</specification>
+</description>
+<profiles>
+        <profile name="ami" description="Live image of Amazon"/>
+        <profile name="onprem" description="OnPrem of Amazon"/>
+        <profile name="ami-x86_64" description="x86_64 of Amazon AMIs"/>
+        <profile name="ami-aarch64" description="ARM builds of Amazon AMIs"/>
+        <profile name="onprem-aarch64" description="ARM builds of Amazon VMs"/>
+        <profile name="onprem-x86_64" description="ARM builds of Amazon VMs"/>
+</profiles>
+<preferences>
+        <version>2.0.0</version>
+        <packagemanager>dnf4</packagemanager>
+        <locale>en_US</locale>
+        <keytable>us</keytable>
+        <timezone>UTC</timezone>
+        <rpm-check-signatures>false</rpm-check-signatures>
+</preferences>
+<preferences>
+
+        <type image="oem" filesystem="ext4" erofscompression="-z" firmware="efi" kernelcmdline="erofs=1 nvme_core.io_timeout=500 console=ttyS0,115200n8 systemd.log_level=debug systemd.log_target=console rd.shell=1" />
+
+
+
+        <!-- <type image="oem" standalone_integrity="false"   bootpartition="false" firmware="efi" efipartsize="100" efiparttable="gpt" overlayroot="true" format="qcow2" filesystem="erofs"  spare_part="1G" > -->
+        <!--         <oemconfig> -->
+        <!--                 <oem-resize>false</oem-resize> -->
+        <!--         </oemconfig> -->
+        <!--         <bootloader  name="grub2" console="serial" timeout="0"/> -->
+        <!-- </type> -->
+</preferences>
+
+<users>
+        <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root" groups="root"/>
+</users>
+
+<repository priority="2" repository_gpgcheck="false" sourcetype="mirrorlist" >
+        <source path="https://cdn.amazonlinux.com/al2023/core/mirrors/latest/x86_64/mirror.list"/>
+</repository>
+
+<repository priority="1" repository_gpgcheck="false" sourcetype="baseurl">
+        <source path="file:///rpms"/>
+</repository>
+
+
+<!-- ami -->
+<packages type="image" profiles="ami-x86_64,ami-aarch64">
+        <namedCollection name="ami"/>
+        <package name="tar"/>
+        <package name="awscli"/>
+        <package name="grub2-efi-x64-ec2"/>
+        <package name="grub2-efi-x64-modules"/>
+        <package name="sssd-common"/>
+        <package name="sssd-kcm"/>
+        <package name="grub2-pc-modules"/>
+        <package name="zram-generator"/>
+        <package name="zram-generator-defaults"/>
+        <package name="systemd-resolved"/>
+        <package name="amazon-chrony-config"/>
+        <package name="lvm2"/>
+        <package name="initscripts"/>
+</packages>
+<!-- ami -->
+
+<!-- on prem -->
+<packages type="bootstrap" profiles="onprem,x86_64">
+        <package name="grub2-pc"/>
+</packages>
+
+<packages type="image" profiles="onprem-minimal,onprem,x86_64,aarch64">
+        <namedCollection name="onprem-minimal"/>
+        <package name="kernel-modules-extra"/>
+        <package name="zstd"/>
+        <package name="systemd-networkd"/>
+</packages>
+<packages type="image" profiles="onprem,x86_64,aarch64">
+        <namedCollection name="onprem"/>
+        <package name="perl-interpreter"/>
+        <package name="binutils"/>
+</packages>
+<!-- on prem -->
+
+<!-- global for all images -->
+<packages type="image">
+        <package name="system-release"/>
+        <namedCollection name="core"/>
+        <package name="kernel"/>
+        <package name="awscli"/>
+        <package name="tar"/>
+        <package name="veritysetup"/>
+        <package name="sssd-common"/>
+        <package name="dracut-kiwi-oem-repart"/>
+        <package name="dracut-kiwi-lib"/>
+        <package name="sssd-kcm"/>
+        <package name="systemd-boot"/>
+        <!-- dont install --> 
+        <ignore name="firewalld"/>
+        <ignore name="amazon-linux-repo-s3"/>
+        <ignore name="vim-minimal"/>
+        <ignore name="curl-minimal"/>
+        <ignore name="libcurl-minimal"/>
+        <ignore name="gnupg2-minimal"/>
+        <!-- dont install --> 
+</packages>
+
+<packages type="bootstrap">
+        <package name="system-release"/>
+        <package name="veritysetup"/>
+        <namedCollection name="core"/>
+        <ignore name="firewalld"/>
+</packages>
+<!-- global for all images -->
+
+<packages type="bootstrap" profiles="ami-x86_64">
+        <package name="grub2-efi-x64-ec2"/>
+        <package name="grub2-efi-x64-modules"/>
+</packages>
+
+
+<packages type="bootstrap" profiles="ami-aarch64">
+        <package name="grub2-efi-aa64-ec2"/>
+        <package name="grub2-efi-aa64-modules"/>
+</packages>
+
+</image>
