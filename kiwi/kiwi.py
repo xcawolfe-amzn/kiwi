@@ -65,6 +65,7 @@ def main():
     """
     docopt.__dict__['extras'] = extras
     try:
+        from pudb import set_trace; set_trace()
         App()
     except KiwiError as e:
         # known exception, log information and exit
