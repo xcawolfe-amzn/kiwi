@@ -125,6 +125,7 @@ class DiskBuilder:
             xml_state.build_type.get_spare_part_mountpoint()
         self.persistency_type = xml_state.build_type.get_devicepersistency()
         self.root_filesystem_is_overlay = xml_state.build_type.get_overlayroot()
+        from pudb import set_trace; set_trace()
         self.root_filesystem_read_only_type = \
             xml_state.build_type.get_overlayroot_readonly_filesystem()
         self.root_filesystem_has_write_partition = \
