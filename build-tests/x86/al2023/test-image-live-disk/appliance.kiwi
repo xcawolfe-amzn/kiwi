@@ -27,8 +27,28 @@
 </preferences>
 <preferences>
 
-        <type image="oem" filesystem="ext4" erofscompression="-z" firmware="efi" kernelcmdline="erofs=1 nvme_core.io_timeout=500 console=ttyS0,115200n8 systemd.log_level=debug systemd.log_target=console rd.shell=1" />
+        <!-- <type image="oem" filesystem="ext4" erofscompression="-z" firmware="efi" kernelcmdline="erofs=1 nvme_core.io_timeout=500 console=ttyS0,115200n8 systemd.log_level=debug systemd.log_target=console rd.shell=1" /> -->
 
+        <type
+            image="oem"
+            filesystem="xfs"
+            kernelcmdline="console=ttyS0"
+            firmware="uefi"
+            format="vmdk"
+            overlayroot="true"
+            overlayroot_readonly_filesystem="erofs"
+            overlayroot_readonly_partsize="915"
+            erofscompression="zstd,level=9"
+            eficsm="false"
+            bootpartition="false"
+            efipartsize="200"
+        >
+            <oemconfig>
+                <oem-resize>false</oem-resize>
+            </oemconfig>
+            <bootloader name="systemd_boot" timeout="10"/>
+            <size unit="G">4</size>
+        </type>
 
 
         <!-- <type image="oem" standalone_integrity="false"   bootpartition="false" firmware="efi" efipartsize="100" efiparttable="gpt" overlayroot="true" format="qcow2" filesystem="erofs"  spare_part="1G" > -->
