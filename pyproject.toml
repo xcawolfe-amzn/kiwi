@@ -66,6 +66,7 @@ toml = { version = "*", optional = true }
 [tool.poetry.extras]
 markup = [ "anymarkup-core", "xmltodict" , "toml" ]
 integration_tests = ["pytest-container"]
+debug = ["pudb"]
 
 [tool.poetry.plugins]
 [tool.poetry.plugins."kiwi.tasks"]
