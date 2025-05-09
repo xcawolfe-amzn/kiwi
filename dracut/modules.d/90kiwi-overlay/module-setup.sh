@@ -7,7 +7,8 @@ check() {
 
 # called by dracut
 depends() {
-    echo network rootfs-block dm kiwi-lib
+    echo rootfs-block dm kiwi-lib
+    # echo network rootfs-block dm kiwi-lib
     return 0
 }
 
