@@ -867,6 +867,7 @@ class DiskBuilder:
                     system if self.volume_manager_name else None,
                     self.custom_partitions if self.custom_partitions else {}
                 ) as image_system:
+                    from pudb import set_trace; set_trace()
                     image_system.mount()
                     root = image_system.mountpoint()
 
