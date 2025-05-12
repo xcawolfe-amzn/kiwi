@@ -603,6 +603,7 @@ class SystemSetup:
         """
         Set SELinux file security contexts if the default context file is found
         """
+        from pudb import set_trace; set_trace()
         security_context = '/etc/selinux/targeted/contexts/files/file_contexts'
         if os.path.exists(self.root_dir + security_context):
             if Path.which(filename='setfiles', access_mode=os.X_OK, root_dir=self.root_dir):
