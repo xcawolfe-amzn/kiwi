@@ -595,6 +595,7 @@ class BootLoaderConfigBase(ABC):
         if self.system_is_mounted:
             # Rebuild security context
             setup = SystemSetup(self.xml_state, self.root_mount.mountpoint)
+            from pudb import set_trace; set_trace()
             if not self.root_filesystem_is_overlay:
                 setup.setup_selinux_file_contexts()
             # Umount system
