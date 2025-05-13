@@ -48,7 +48,7 @@
                 <oem-resize>false</oem-resize>
             </oemconfig>
             <!-- <bootloader name="systemd_boot" timeout="10"/> -->
-            <bootloader name="systemd-boot" timeout="10"/>
+            <bootloader name="systemd_boot" timeout="10"/>
             <size unit="G">4</size>
         </type>
 
