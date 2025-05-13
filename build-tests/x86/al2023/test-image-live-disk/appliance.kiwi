@@ -35,7 +35,7 @@
             kernelcmdline="console=ttyS0"
             firmware="efi"
             format="vmdk"
-            verity="all"
+            verity_blocks="all"
             overlayroot="true"
             overlayroot_readonly_filesystem="erofs"
             overlayroot_readonly_partsize="2048"
