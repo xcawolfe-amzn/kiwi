@@ -33,7 +33,7 @@
             image="oem"
             filesystem="xfs"
             kernelcmdline="console=ttyS0"
-            firmware="uefi"
+            firmware="efi"
             format="vmdk"
             overlayroot="true"
             overlayroot_readonly_filesystem="erofs"
