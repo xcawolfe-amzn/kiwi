@@ -6,34 +6,32 @@ set -x
 echo "list blk"
 blkid
 
+# echo "See fstab original"
+# cat /etc/fstab
+# ROOT_VERITY="/dev/mapper/root"
 
-echo "See fstab original"
-cat /etc/fstab
-ROOT_VERITY="/dev/mapper/root"
+# # Get the root device from kiwi created, should be a loop dev
+# ROOT_DEV=$(blkid --list-one --output device --match-token LABEL="ROOT") 
+# ROOT_UUID=$(blkid --list-one --output value -s UUID --match-token LABEL="ROOT") 
 
-# Get the root device from kiwi created, should be a loop dev
-ROOT_DEV=$(blkid --list-one --output device --match-token LABEL="ROOT") 
-ROOT_UUID=$(blkid --list-one --output value -s UUID --match-token LABEL="ROOT") 
+# # Get the specific loop device 
+# LOOP_DEV=$(echo "${ROOT_DEV}" | sed 's/p[0-9]\+$//')
 
-# Get the specific loop device 
-LOOP_DEV=$(echo "${ROOT_DEV}" | sed 's/p[0-9]\+$//')
+# # TODO: Remove after testing 
+# HASH_DEV="/boot/efi/root-verity.img"
 
-# TODO: Remove after testing 
-HASH_DEV="/boot/efi/root-verity.img"
+# VERITY_FILE="/boot/efi/verity-info.txt"
 
-VERITY_FILE="/boot/efi/verity-info.txt"
-
-# Remap verity with the symlink for verity device
-sed -i "1s|UUID=[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}|${ROOT_VERITY}|" /etc/fstab
-
-
-echo "list blk"
-blkid
+# # Remap verity with the symlink for verity device
+# # sed -i "1s|UUID=[0-9a-f]\{8\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{12\}|${ROOT_VERITY}|" /etc/fstab
 
 
-echo "See fstab changes"
-cat /etc/fstab
-/usr/bin/grub2-amazon-setup -y
+# echo "list blk"
+# blkid
+
+
+# echo "See fstab changes"
+# cat /etc/fstab
 #VERITY_DEV=$(blkid --list-one --output device --match-token LABEL="VERITY") 
 
 ## Unmount the verity parition
