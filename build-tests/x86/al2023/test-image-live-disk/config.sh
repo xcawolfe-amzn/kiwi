@@ -1,5 +1,4 @@
 #!/bin/bash
-mkdir /verity
 #================
 # FILE          : config.sh
 #----------------
@@ -37,7 +36,5 @@ mkdir /verity
 # Setup default target, multi-user
 #--------------------------------------
 # baseSetRunlevel 3
-setenforce Permissive
-modprobe erofs
 
 exit 0
