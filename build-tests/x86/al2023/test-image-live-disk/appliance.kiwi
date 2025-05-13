@@ -144,11 +144,11 @@
 </packages>
 <!-- global for all images -->
 
-<packages type="bootstrap" profiles="ami-x86_64">
-        <package name="grub2-efi-x64"/>
-        <package name="grub2-efi-x64-ec2"/>
-        <package name="grub2-efi-x64-modules"/>
-</packages>
+<!-- <packages type="bootstrap" profiles="ami-x86_64"> -->
+<!--         <package name="grub2-efi-x64"/> -->
+<!--         <package name="grub2-efi-x64-ec2"/> -->
+<!--         <package name="grub2-efi-x64-modules"/> -->
+<!-- </packages> -->
 
 
 <packages type="bootstrap" profiles="ami-aarch64">
