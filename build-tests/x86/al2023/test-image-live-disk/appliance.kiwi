@@ -80,6 +80,7 @@
         <package name="tar"/>
         <package name="awscli"/>
         <package name="grub2-efi-x64-ec2"/>
+        <package name="grub2-efi-x64"/>
         <package name="grub2-efi-x64-modules"/>
         <package name="sssd-common"/>
         <package name="sssd-kcm"/>
