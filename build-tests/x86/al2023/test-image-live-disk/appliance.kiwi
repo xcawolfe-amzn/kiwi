@@ -38,7 +38,7 @@
             verity_blocks="all"
             overlayroot="true"
             overlayroot_readonly_filesystem="erofs"
-            overlayroot_readonly_partsize="2048"
+            overlayroot_readonly_partsize="915"
             erofscompression="zstd,level=9"
             eficsm="false"
             bootpartition="false"
