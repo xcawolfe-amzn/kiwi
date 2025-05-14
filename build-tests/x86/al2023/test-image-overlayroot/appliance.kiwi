@@ -8,7 +8,7 @@
     </description>
     <profiles>
         <profile name="sdboot_erofs" description="systemd boot overlay disk using erofs"/>
-        <!-- <profile name="sdboot_verity_erofs" description="systemd boot verity baked overlay disk using erofs"/> -->
+        <profile name="sdboot_verity_erofs" description="systemd boot verity baked overlay disk using erofs"/>
         <!-- <profile name="grub_verity_erofs" description="grub verity baked overlay disk using erofs"/> -->
     </profiles>
     <preferences>
