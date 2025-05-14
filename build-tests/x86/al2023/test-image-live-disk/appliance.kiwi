@@ -41,7 +41,7 @@
             overlayroot_readonly_partsize="915"
             erofscompression="zstd,level=9"
             eficsm="false"
-            bootpartition="false"
+            bootpartition="true"
             efipartsize="200"
         >
             <oemconfig>
