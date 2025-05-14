@@ -6,14 +6,20 @@ set -x
 echo "list blk"
 blkid
 
-# echo "See fstab original"
-# cat /etc/fstab
-# ROOT_VERITY="/dev/mapper/root"
 
-# # Get the root device from kiwi created, should be a loop dev
-# ROOT_DEV=$(blkid --list-one --output device --match-token LABEL="ROOT") 
-# ROOT_UUID=$(blkid --list-one --output value -s UUID --match-token LABEL="ROOT") 
+# Install grub here when the partitions are set but before sync 
+# to readonly filesystem
+dnf install grub2-tools grub2-efi-x64-ec2 -y 
+/usr/bin/grub2-amazon-setup -y
 
+echo "See fstab original"
+cat /etc/fstab
+ROOT_DEV=$(blkid --list-one --output device --match-token LABEL="ROOT") 
+ROOT_UUID=$(blkid --list-one --output value -s UUID --match-token LABEL="ROOT") 
+ROOT_TYPE=$(blkid --list-one --output value -s TYPE --match-token LABEL="ROOT") 
+echo "${ROOT_UUID} / ${ROOT_TYPE} 0 1" >> /etc/fstab
+echo "See fstab changed"
+cat /etc/fstab
 # # Get the specific loop device 
 # LOOP_DEV=$(echo "${ROOT_DEV}" | sed 's/p[0-9]\+$//')
 
