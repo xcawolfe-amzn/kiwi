@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OBS-Profiles: @BUILD_FLAVOR@ -->
+<image schemaversion="7.5" name="kiwi-test-image-overlayroot">
+    <description type="system">
+        <author>Marcus Schäfer</author>
+        <contact>marcus.schaefer@suse.com</contact>
+        <specification>Overlayroot Disk test build</specification>
+    </description>
+    <profiles>
+        <profile name="sdboot_erofs" description="systemd boot overlay disk using erofs"/>
+        <!-- <profile name="sdboot_verity_erofs" description="systemd boot verity baked overlay disk using erofs"/> -->
+        <!-- <profile name="grub_verity_erofs" description="grub verity baked overlay disk using erofs"/> -->
+    </profiles>
+    <preferences>
+        <version>1.42.1</version>
+        <packagemanager>zypper</packagemanager>
+        <locale>en_US</locale>
+        <keytable>us</keytable>
+        <timezone>Europe/Berlin</timezone>
+        <rpm-excludedocs>true</rpm-excludedocs>
+        <rpm-check-signatures>false</rpm-check-signatures>
+    </preferences>
+    <preferences profiles="sdboot_erofs">
+        <type
+            image="oem"
+            filesystem="xfs"
+            kernelcmdline="console=ttyS0"
+            firmware="uefi"
+            format="vmdk"
+            overlayroot="true"
+            overlayroot_readonly_filesystem="erofs"
+            overlayroot_readonly_partsize="915"
+            erofscompression="zstd,level=9"
+            eficsm="false"
+            bootpartition="false"
+            efipartsize="200"
+        >
+            <oemconfig>
+                <oem-resize>false</oem-resize>
+            </oemconfig>
+            <bootloader name="systemd_boot" timeout="10"/>
+            <size unit="G">4</size>
+        </type>
+    </preferences>
+    <preferences profiles="sdboot_verity_erofs">
+        <type
+            image="oem"
+            filesystem="xfs"
+            kernelcmdline="console=ttyS0 rd.systemd.verity=1"
+            firmware="uefi"
+            format="vmdk"
+            overlayroot="true"
+            overlayroot_readonly_filesystem="erofs"
+            overlayroot_readonly_partsize="2048"
+            erofscompression="zstd,level=9"
+            eficsm="false"
+            verity_blocks="all"
+            bootpartition="false"
+            efipartsize="200"
+        >
+            <oemconfig>
+                <oem-resize>false</oem-resize>
+            </oemconfig>
+            <bootloader name="systemd_boot" timeout="10"/>
+            <size unit="G">4</size>
+        </type>
+    </preferences>
+
+    <users>
+        <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root" groups="root"/>
+    </users>
+
+    <repository priority="2" repository_gpgcheck="false" sourcetype="mirrorlist" >
+            <source path="https://cdn.amazonlinux.com/al2023/core/mirrors/latest/x86_64/mirror.list"/>
+    </repository>
+    <repository priority="1" repository_gpgcheck="false" sourcetype="baseurl">
+            <source path="file:///rpms"/>
+    </repository>
+
+    <packages type="image" profiles="sdboot_verity_erofs,grub_verity_erofs">
+        <package name="cryptsetup"/>
+        <package name="dracut-kiwi-verity"/>
+    </packages>
+    <packages type="image">
+        <namedCollection name="ami"/>
+        <package name="tar"/>
+        <package name="awscli"/>
+        <!-- <package name="grub2-tools"/> -->
+        <!-- <package name="grub2-efi-x64-ec2"/> -->
+        <!-- <package name="grub2-efi-x64"/> -->
+        <!-- <package name="grub2-efi-x64-modules"/> -->
+        <package name="sssd-common"/>
+        <package name="sssd-kcm"/>
+        <!-- <package name="grub2-pc-modules"/> -->
+        <package name="zram-generator"/>
+        <package name="zram-generator-defaults"/>
+        <package name="systemd-resolved"/>
+        <package name="amazon-chrony-config"/>
+        <package name="lvm2"/>
+        <package name="initscripts"/>
+        <package name="dracut-kiwi-overlay"/>
+        <package name="system-release"/>
+        <!-- core package -->
+        <namedCollection name="core"/>
+        <package name="kernel"/>
+        <package name="awscli"/>
+        <package name="tar"/>
+        <package name="veritysetup"/>
+        <package name="sssd-common"/>
+        <package name="dracut-kiwi-overlay"/>
+        <!-- <package name="dracut-kiwi-lib"/> -->
+        <package name="sssd-kcm"/>
+        <package name="systemd-boot"/>
+        <!-- dont install --> 
+        <ignore name="firewalld"/>
+        <ignore name="amazon-linux-repo-s3"/>
+        <ignore name="vim-minimal"/>
+        <ignore name="curl-minimal"/>
+        <ignore name="libcurl-minimal"/>
+        <ignore name="gnupg2-minimal"/>
+        <!-- dont install --> 
+    </packages>
+    <packages type="bootstrap">
+        <package name="system-release"/>
+        <package name="veritysetup"/>
+        <namedCollection name="core"/>
+        <ignore name="firewalld"/>
+    </packages>
+</image>
