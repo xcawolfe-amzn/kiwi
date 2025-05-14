@@ -80,12 +80,12 @@
         <package name="tar"/>
         <package name="awscli"/>
         <!-- <package name="grub2-tools"/> -->
-        <package name="grub2-efi-x64-ec2"/>
+        <!-- <package name="grub2-efi-x64-ec2"/> -->
         <!-- <package name="grub2-efi-x64"/> -->
         <!-- <package name="grub2-efi-x64-modules"/> -->
         <package name="sssd-common"/>
         <package name="sssd-kcm"/>
-        <package name="grub2-pc-modules"/>
+        <!-- <package name="grub2-pc-modules"/> -->
         <package name="zram-generator"/>
         <package name="zram-generator-defaults"/>
         <package name="systemd-resolved"/>
