@@ -39,7 +39,7 @@
                 <oem-resize>false</oem-resize>
             </oemconfig>
             <bootloader name="systemd_boot" timeout="10"/>
-            <size unit="G">4</size>
+            <!-- <size unit="G">4</size> -->
         </type>
     </preferences>
     <preferences profiles="sdboot_verity_erofs">
@@ -62,7 +62,7 @@
                 <oem-resize>false</oem-resize>
             </oemconfig>
             <bootloader name="systemd_boot" timeout="10"/>
-            <size unit="G">4</size>
+            <!-- <size unit="G">4</size> -->
         </type>
     </preferences>
 
