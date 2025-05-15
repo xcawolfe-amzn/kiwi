@@ -14,7 +14,7 @@ depends() {
 
 # called by dracut
 installkernel() {
-  instmods squashfs loop overlay nbd aoe
+  instmods squashfs loop overlay aoe
 }
 
 # called by dracut
