@@ -76,11 +76,11 @@ function check_filesystem {
         check_fs="e2fsck -p -f ${device}"
         check_fs_return_ok="test \$? -le 2"
     ;;
-    btrfs)
+    # btrfs)
         # btrfs check returns a zero exit status if it succeeds.
         # Non zero is returned in case of failure.
-        check_fs="btrfsck ${device}"
-        check_fs_return_ok="test \$? -eq 0"
+        # check_fs="btrfsck ${device}"
+        # check_fs_return_ok="test \$? -eq 0"
     ;;
     xfs)
         # xfs_repair can be used to check the filesystem. However
