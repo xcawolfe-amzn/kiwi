@@ -20,6 +20,28 @@
         <rpm-excludedocs>true</rpm-excludedocs>
         <rpm-check-signatures>false</rpm-check-signatures>
     </preferences>
+    <preferences profiles="custom">
+        <type
+            image="oem"
+            filesystem="xfs"
+            kernelcmdline="console=ttyS0"
+            firmware="uefi"
+            format="vmdk"
+            overlayroot="true"
+            overlayroot_readonly_filesystem="erofs"
+            overlayroot_readonly_partsize="2048"
+            erofscompression="zstd,level=9"
+            eficsm="false"
+            bootpartition="false"
+            efipartsize="200"
+        >
+            <oemconfig>
+                <oem-resize>false</oem-resize>
+            </oemconfig>
+            <bootloader name="custom"/>
+            <!-- <size unit="G">4</size> -->
+        </type>
+    </preferences>
     <preferences profiles="sdboot_erofs">
         <type
             image="oem"
@@ -62,7 +84,7 @@
                 <oem-resize>false</oem-resize>
             </oemconfig>
             <bootloader name="systemd_boot" timeout="10"/>
-            <size unit="G">8</size>
+            <size unit="G">4</size>
         </type>
     </preferences>
 
