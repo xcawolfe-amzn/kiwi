@@ -129,7 +129,6 @@
         <package name="tar"/>
         <package name="veritysetup"/>
         <package name="sssd-common"/>
-        <package name="dracut-kiwi-overlay"/>
         <!-- <package name="dracut-kiwi-lib"/> -->
         <package name="sssd-kcm"/>
         <package name="systemd-boot"/>
