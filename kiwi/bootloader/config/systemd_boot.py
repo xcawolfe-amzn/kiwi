@@ -178,7 +178,7 @@ class BootLoaderSystemdBoot(BootLoaderSpecBase):
                 '--entry-token', 'os-id'
             ]
         )
-        Path.wipe(f'{root_dir}/boot/loader')
+        # Path.wipe(f'{root_dir}/boot/loader')
         self._write_kernel_cmdline_file(root_dir)
 
         # copy kernel and initrd
