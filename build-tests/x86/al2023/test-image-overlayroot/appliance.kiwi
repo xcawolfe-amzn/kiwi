@@ -68,7 +68,7 @@
         <type
             image="oem"
             filesystem="xfs"
-            kernelcmdline="console=ttyS0 rd.systemd.verity=1"
+            kernelcmdline="console=ttyS0 rd.shell=1 rd.systemd.verity=1"
             firmware="uefi"
             format="vmdk"
             overlayroot="true"
