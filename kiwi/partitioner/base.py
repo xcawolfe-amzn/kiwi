@@ -48,7 +48,7 @@ class PartitionerBase:
         self.start_sector = start_sector
         self.extended_layout = extended_layout
         self.ec2_layout = False
-        self.reserved_ids = set()
+        self.reserved_ids: set[int] = set()
 
         self.flag_map: Dict[str, Union[bool, str, None]] = {}
 
