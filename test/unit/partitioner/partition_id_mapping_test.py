@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from kiwi.partitioner.gpt import PartitionerGpt
-from kiwi.partitioner.msdos import PartitionerMsdos
+from kiwi.partitioner.msdos import PartitionerMsDos
 from kiwi.partitioner.dasd import PartitionerDasd
 
 
@@ -36,7 +36,7 @@ class TestPartitionIDMapping(unittest.TestCase):
     @patch('kiwi.partitioner.msdos.Command.run')
     def test_msdos_partition_id_mapping(self, mock_command):
         """Test MSDOS partitioner returns correct partition IDs"""
-        partitioner = PartitionerMsdos(MockDeviceProvider())
+        partitioner = PartitionerMsDos(MockDeviceProvider())
         partitioner.set_ec2_layout(True)
         
         # Test non-root partition gets ID 2
@@ -72,6 +72,24 @@ class TestPartitionIDMapping(unittest.TestCase):
             
         self.assertEqual(id1, 1)
         self.assertEqual(id2, 2)
+
+    def test_ec2_layout_multiple_partitions(self):
+        """Test EC2 layout with multiple partitions"""
+        partitioner = PartitionerGpt(MockDeviceProvider())
+        partitioner.set_ec2_layout(True)
+        
+        with patch('kiwi.partitioner.gpt.Command.run'):
+            # Create multiple partitions before root
+            efi_id = partitioner.create('p.UEFI', 100, 't.efi')
+            boot_id = partitioner.create('p.lxboot', 500, 't.linux')
+            swap_id = partitioner.create('p.swap', 1024, 't.swap')
+            root_id = partitioner.create('p.lxroot', 'all_free', 't.linux')
+            
+        # Root should get ID 1, others should be 2, 3, 4
+        self.assertEqual(root_id, 1)
+        self.assertEqual(efi_id, 2)
+        self.assertEqual(boot_id, 3)
+        self.assertEqual(swap_id, 4)
 
 
 if __name__ == '__main__':
