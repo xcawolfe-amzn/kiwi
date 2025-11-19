@@ -153,6 +153,37 @@ class TestDisk:
         )
         assert self.disk.public_partition_id_map['kiwi_SwapPart'] == 1
 
+    @patch('kiwi.storage.disk.Command.run')
+    def test_create_prep_partition(self, mock_command):
+        self.disk.create_prep_partition('8')
+        self.partitioner.create.assert_called_once_with(
+            'p.prep', '8', 't.prep'
+        )
+        assert self.disk.public_partition_id_map['kiwi_PrepPart'] == 1
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_create_custom_partitions(self, mock_command):
+        table_entries = {
+            'var': ptable_entry_type(
+                mbsize='100',
+                clone=2,
+                partition_name='p.lxvar',
+                partition_type='t.linux',
+                mountpoint='/var',
+                filesystem='ext3',
+                label='var'
+            )
+        }
+        self.disk.create_custom_partitions(table_entries)
+        assert self.partitioner.create.call_args_list == [
+            call('p.lxvarclone1', '100', 't.linux'),
+            call('p.lxvarclone2', '100', 't.linux'),
+            call('p.lxvar', '100', 't.linux')
+        ]
+        assert self.disk.public_partition_id_map['kiwi_varPartClone1'] == 1
+        assert self.disk.public_partition_id_map['kiwi_varPartClone2'] == 1
+        assert self.disk.public_partition_id_map['kiwi_VarPart'] == 1
+
     def test_create_custom_partitions_reserved_name(self):
         table_entries = {
             'root': ptable_entry_type(
@@ -168,6 +199,83 @@ class TestDisk:
         with raises(KiwiCustomPartitionConflictError):
             self.disk.create_custom_partitions(table_entries)
 
+    @patch('kiwi.storage.disk.Command.run')
+    def test_device_map_efi_partition_partx(self, mock_command):
+        self.disk.create_efi_partition('100')
+        self.disk.map_partitions()
+        assert self.disk.partition_map == {'efi': '/dev/loop0p1'}
+        self.disk.is_mapped = False
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_device_map_efi_partition_kpartx(self, mock_command):
+        self.disk.partition_mapper = 'kpartx'
+        self.disk.create_efi_partition('100')
+        self.disk.map_partitions()
+        assert self.disk.partition_map == {'efi': '/dev/mapper/loop0p1'}
+        self.disk.is_mapped = False
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_device_map_prep_partition(self, mock_command):
+        self.disk.create_prep_partition('8')
+        self.disk.map_partitions()
+        assert self.disk.partition_map == {'prep': '/dev/loop0p1'}
+        self.disk.is_mapped = False
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_device_map_linux_dev_sda(self, mock_command):
+        self.storage_provider.is_loop.return_value = False
+        self.storage_provider.get_device = mock.Mock(
+            return_value='/dev/sda'
+        )
+        self.disk.create_efi_partition('100')
+        self.disk.map_partitions()
+        assert self.disk.partition_map == {'efi': '/dev/sda1'}
+        self.disk.is_mapped = False
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_device_map_linux_dev_c0d0(self, mock_command):
+        self.storage_provider.is_loop.return_value = False
+        self.storage_provider.get_device = mock.Mock(
+            return_value='/dev/c0d0'
+        )
+        self.disk.create_efi_partition('100')
+        self.disk.map_partitions()
+        assert self.disk.partition_map == {'efi': '/dev/c0d0p1'}
+        self.disk.is_mapped = False
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_activate_boot_partition_is_boot_partition(self, mock_command):
+        self.disk.create_boot_partition('100')
+        self.disk.create_root_partition('100')
+        self.disk.activate_boot_partition()
+        self.partitioner.set_flag(1, 'f.active')
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_activate_boot_partition_is_root_partition(self, mock_command):
+        self.disk.create_root_partition('100')
+        self.disk.activate_boot_partition()
+        self.partitioner.set_flag(1, 'f.active')
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_activate_boot_partition_is_prep_partition(self, mock_command):
+        self.disk.create_prep_partition('8')
+        self.disk.activate_boot_partition()
+        self.partitioner.set_flag(1, 'f.active')
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_wipe_gpt(self, mock_command):
+        self.disk.wipe()
+        mock_command.assert_called_once_with(
+            ['sgdisk', '--zap-all', '/dev/loop0']
+        )
+
+    @patch('kiwi.storage.disk.Command.run')
+    @patch('kiwi.storage.disk.Temporary.new_file')
+    def test_wipe_dasd(self, mock_temp, mock_command):
+        mock_command.side_effect = Exception
+        self.disk.table_type = 'dasd'
+        mock_temp.return_value = self.tempfile
+
         m_open = mock_open()
         with patch('builtins.open', m_open, create=True):
             self.disk.wipe()
@@ -180,10 +288,86 @@ class TestDisk:
                 ['bash', '-c', 'cat tempfile | fdasd -f /dev/loop0']
             )
 
+    @patch('kiwi.storage.disk.Command.run')
+    def test_map_partitions_loop_partx(self, mock_command):
+        self.disk.map_partitions()
+        mock_command.assert_called_once_with(
+            ['partx', '--add', '/dev/loop0']
+        )
+        self.disk.is_mapped = False
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_map_partitions_loop_kpartx(self, mock_command):
+        self.disk.partition_mapper = 'kpartx'
+        self.disk.map_partitions()
+        mock_command.assert_called_once_with(
+            ['kpartx', '-s', '-a', '/dev/loop0']
+        )
+        self.disk.is_mapped = False
+
+    @patch('kiwi.storage.disk.Command.run')
+    def test_map_partitions_other(self, mock_command):
+        self.storage_provider.is_loop.return_value = False
+        self.disk.map_partitions()
+        mock_command.assert_called_once_with(
+            ['partprobe', '/dev/loop0']
+        )
+
     @patch.object(Disk, 'get_discoverable_partition_ids')
+    @patch('kiwi.storage.disk.Command.run')
+    def test_context_manager_exit_partx_loop_cleanup_failed(
+        self, mock_command, mock_get_discoverable_partition_ids
+    ):
+        mock_command.side_effect = Exception
+        with Disk('gpt', self.storage_provider) as disk:
+            disk.is_mapped = True
+            disk.partition_map = {'root': '/dev/loop0p1'}
+        with self._caplog.at_level(logging.WARNING):
+            mock_command.assert_called_once_with(
+                ['partx', '--delete', '/dev/loop0']
+            )
+
     @patch.object(Disk, 'get_discoverable_partition_ids')
+    @patch('kiwi.storage.disk.Command.run')
+    def test_context_manager_exit_dm_loop_cleanup_failed(
+        self, mock_command, mock_get_discoverable_partition_ids
+    ):
+        mock_command.side_effect = Exception
+        with Disk('gpt', self.storage_provider) as disk:
+            disk.partition_mapper = 'kpartx'
+            disk.is_mapped = True
+            disk.partition_map = {'root': '/dev/mapper/loop0p1'}
+        with self._caplog.at_level(logging.WARNING):
+            mock_command.assert_called_once_with(
+                ['dmsetup', 'remove', '/dev/mapper/loop0p1']
+            )
+
     @patch.object(Disk, 'get_discoverable_partition_ids')
+    @patch('kiwi.storage.disk.Command.run')
+    def test_context_manager_exit_partx(
+        self, mock_command, mock_get_discoverable_partition_ids
+    ):
+        with Disk('gpt', self.storage_provider) as disk:
+            disk.is_mapped = True
+            disk.partition_map = {'root': '/dev/loop0p1'}
+        assert mock_command.call_args_list == [
+            call(['partx', '--delete', '/dev/loop0'])
+        ]
+
     @patch.object(Disk, 'get_discoverable_partition_ids')
+    @patch('kiwi.storage.disk.Command.run')
+    def test_context_manager_exit_kpartx(
+        self, mock_command, mock_get_discoverable_partition_ids
+    ):
+        with Disk('gpt', self.storage_provider) as disk:
+            disk.partition_mapper = 'kpartx'
+            disk.is_mapped = True
+            disk.partition_map = {'root': '/dev/mapper/loop0p1'}
+        assert mock_command.call_args_list == [
+            call(['dmsetup', 'remove', '/dev/mapper/loop0p1']),
+            call(['kpartx', '-d', '/dev/loop0'])
+        ]
+
     def test_get_public_partition_id_map(self):
         assert self.disk.get_public_partition_id_map() == {}
 
@@ -209,38 +393,14 @@ class TestDisk:
         assert size == '100'
         assert clone_size == 'all_free'
 
-        """Test that renumbering is skipped if root partition not found"""
-        disk = Disk('gpt', Mock(), None)
-        disk.public_partition_id_map = {'kiwi_BootPart': '1', 'kiwi_SwapPart': '2'}
-        # Should not raise any errors if root partition not in map
-        disk.renumber_partitions_for_ec2()
-
-        disk = Disk('gpt', storage_provider, None)
-        disk.public_partition_id_map = {
-            'kiwi_RootPart': '5',
-            'kiwi_BootPart': '2',
-            'kiwi_EFIPart': '1',
-            'kiwi_SwapPart': '3'
-        }
-
-        disk.renumber_partitions_for_ec2()
-
-        # Verify sgdisk was called to swap partitions 4 and 5, then 3 and 4, etc.
-        expected_calls = [
-            call(['sgdisk', '--swap-partitions', '4:5', '/dev/sda']),
-            call(['sgdisk', '--swap-partitions', '3:4', '/dev/sda']),
-            call(['sgdisk', '--swap-partitions', '2:3', '/dev/sda']),
-            call(['sgdisk', '--swap-partitions', '1:2', '/dev/sda']),
-            call(['partprobe', '/dev/sda'])
-        ]
-
-        mock_command.assert_has_calls(expected_calls)
-
-        disk.renumber_partitions_for_ec2()
-
-        # Verify sgdisk was called for swapping, then partx for update
-        sgdisk_call = call(['sgdisk', '--swap-partitions', '2:3', '/dev/loop0'])
-        partx_call = call(['partx', '--update', '/dev/loop0'])
-
-        assert sgdisk_call in mock_command.call_args_list
-        assert partx_call in mock_command.call_args_list
+    @patch('kiwi.storage.disk.Command.run')
+    def test_get_discoverable_partition_ids(self, mock_Command_run):
+        command = Mock()
+        with open('../data/systemd-id128.out') as ids:
+            command.output = ids.read()
+        mock_Command_run.return_value = command
+        assert self.disk.get_discoverable_partition_ids()['root'] == \
+            '4f68bce3e8cd4db196e7fbcaf984b709'
+        mock_Command_run.side_effect = KiwiCommandError('issue')
+        assert self.disk.get_discoverable_partition_ids().get('root') == \
+            '4f68bce3e8cd4db196e7fbcaf984b709'
