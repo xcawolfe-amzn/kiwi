@@ -1621,7 +1621,7 @@ class XMLState:
         """
         try:
             ec2_layout_value = self.build_type.get_ec2_layout()
-            return ec2_layout_value == "true" if ec2_layout_value else False
+            return True if ec2_layout_value else False
         except AttributeError:
             # Attribute doesn't exist in older XML files
             return False
