@@ -1870,7 +1870,7 @@ class TestDiskBuilder:
             mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
             mock_exists.return_value = True
 
-            description = XMLDescription('../../../data/example_ec2_layout.xml')
+            description = XMLDescription('../../data/example_ec2_layout.xml')
             disk_builder = DiskBuilder(
                 XMLState(description.load()), 'target_dir', 'root_dir'
             )
