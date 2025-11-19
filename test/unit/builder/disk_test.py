@@ -1844,7 +1844,12 @@ class TestDiskBuilder:
         # Mock device objects to return proper strings
         mock_root_device = Mock()
         mock_root_device.get_device.return_value = '/dev/root-device'
-        disk.get_device = Mock(return_value={'root': mock_root_device})
+        mock_swap_device = Mock()
+        mock_swap_device.get_device.return_value = '/dev/swap-device'
+        disk.get_device = Mock(return_value={
+            'root': mock_root_device,
+            'swap': mock_swap_device
+        })
         
         # Track partition IDs returned by create calls
         root_partition_id = None
