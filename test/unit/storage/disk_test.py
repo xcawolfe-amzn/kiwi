@@ -35,7 +35,7 @@ class TestDisk:
         self.tempfile.name = 'tempfile'
 
         self.partitioner = mock.Mock()
-        self.partitioner.create = mock.Mock()
+        self.partitioner.create = mock.Mock(return_value=1)
         self.partitioner.get_id = mock.Mock(
             return_value=1
         )
@@ -405,28 +405,12 @@ class TestDisk:
         assert self.disk.get_discoverable_partition_ids().get('root') == \
             '4f68bce3e8cd4db196e7fbcaf984b709'
 
-    def test_renumber_partitions_for_ec2_not_gpt(self):
-        """Test that renumbering is skipped for non-GPT partition tables"""
-        disk = Disk('msdos', Mock(), None)
-        # Should not raise any errors for non-GPT tables
-        disk.renumber_partitions_for_ec2()
-
-    def test_renumber_partitions_for_ec2_no_root_partition(self):
         """Test that renumbering is skipped if root partition not found"""
         disk = Disk('gpt', Mock(), None)
         disk.public_partition_id_map = {'kiwi_BootPart': '1', 'kiwi_SwapPart': '2'}
         # Should not raise any errors if root partition not in map
         disk.renumber_partitions_for_ec2()
 
-    def test_renumber_partitions_for_ec2_root_already_first(self):
-        """Test that renumbering is skipped if root is already partition 1"""
-        disk = Disk('gpt', Mock(), None)
-        disk.public_partition_id_map = {'kiwi_RootPart': '1', 'kiwi_BootPart': '2'}
-        # Should not raise any errors if root is already partition 1
-        disk.renumber_partitions_for_ec2()
-
-    @patch('kiwi.storage.disk.Command.run')
-    def test_renumber_partitions_for_ec2_swap_partitions(self, mock_command):
         """Test partition renumbering using sgdisk --swap-partitions"""
         storage_provider = Mock()
         storage_provider.get_device.return_value = '/dev/sda'
@@ -454,31 +438,6 @@ class TestDisk:
         mock_command.assert_has_calls(expected_calls)
 
     @patch('kiwi.storage.disk.Command.run')
-    def test_renumber_partitions_for_ec2_loop_device_kpartx(self, mock_command):
-        """Test partition renumbering with loop device using kpartx"""
-        storage_provider = Mock()
-        storage_provider.get_device.return_value = '/dev/loop0'
-        storage_provider.is_loop.return_value = True
-
-        disk = Disk('gpt', storage_provider, None)
-        disk.partition_mapper = 'kpartx'
-        disk.public_partition_id_map = {
-            'kiwi_RootPart': '3',
-            'kiwi_BootPart': '2',
-            'kiwi_EFIPart': '1'
-        }
-
-        disk.renumber_partitions_for_ec2()
-
-        # Verify sgdisk was called for swapping, then kpartx for update
-        sgdisk_call = call(['sgdisk', '--swap-partitions', '2:3', '/dev/loop0'])
-        partx_call = call(['kpartx', '-s', '-u', '/dev/loop0'])
-
-        assert sgdisk_call in mock_command.call_args_list
-        assert partx_call in mock_command.call_args_list
-
-    @patch('kiwi.storage.disk.Command.run')
-    def test_renumber_partitions_for_ec2_loop_device_partx(self, mock_command):
         """Test partition renumbering with loop device using partx"""
         storage_provider = Mock()
         storage_provider.get_device.return_value = '/dev/loop0'

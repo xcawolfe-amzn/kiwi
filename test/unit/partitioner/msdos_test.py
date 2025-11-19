@@ -123,24 +123,24 @@ class TestPartitionerMsDos:
     ):
         self.partitioner.create('name', 100, 't.linux')
         mock_create_primary.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 1
         )
         mock_create_primary.reset_mock()
         self.partitioner_extended.create('name', 100, 't.linux')
         mock_create_primary.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 1
         )
         self.partitioner_extended.partition_id = 3
         self.partitioner_extended.create('name', 100, 't.linux')
-        mock_create_extended.assert_called_once_with('name')
+        mock_create_extended.assert_called_once_with('name', 3)
         mock_create_logical.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 3
         )
         mock_create_logical.reset_mock()
         self.partitioner_extended.partition_id = 7
         self.partitioner_extended.create('name', 100, 't.linux')
         mock_create_logical.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 8
         )
 
     @patch('kiwi.partitioner.msdos.Command.run')
