@@ -411,11 +411,6 @@ class TestDisk:
         # Should not raise any errors if root partition not in map
         disk.renumber_partitions_for_ec2()
 
-        """Test partition renumbering using sgdisk --swap-partitions"""
-        storage_provider = Mock()
-        storage_provider.get_device.return_value = '/dev/sda'
-        storage_provider.is_loop.return_value = False
-
         disk = Disk('gpt', storage_provider, None)
         disk.public_partition_id_map = {
             'kiwi_RootPart': '5',
@@ -438,11 +433,6 @@ class TestDisk:
         mock_command.assert_has_calls(expected_calls)
 
     @patch('kiwi.storage.disk.Command.run')
-        """Test partition renumbering with loop device using partx"""
-        storage_provider = Mock()
-        storage_provider.get_device.return_value = '/dev/loop0'
-        storage_provider.is_loop.return_value = True
-
         disk = Disk('gpt', storage_provider, None)
         disk.partition_mapper = 'partx'
         disk.public_partition_id_map = {
