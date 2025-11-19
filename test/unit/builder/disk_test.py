@@ -1951,9 +1951,8 @@ class TestDiskBuilder:
     @patch('kiwi.builder.disk.Defaults.get_grub_boot_directory_name')
     @patch('os.path.exists')
     def test_create_disk_ec2_layout_with_lvm(
-        self, mock_exists, mock_ImageSystem, mock_grub_dir, mock_command,
-        mock_volume_manager, mock_fs, mock_create_boot_loader_config,
-        mock_Disk, mock_runtime_config
+        self, mock_exists, mock_grub_dir, mock_command, mock_fs,
+        mock_create_boot_loader_config, mock_Disk, mock_runtime_config
     ):
         """Test EC2 layout with LVM - covers create_root_lvm_partition path"""
         disk = self._get_disk_instance()
