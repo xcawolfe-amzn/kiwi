@@ -1862,6 +1862,9 @@ class TestDiskBuilder:
             spy_partitioner.set_start_sector = Mock()
             mock_partitioner_new.return_value = spy_partitioner
 
+            # Mock RuntimeConfig to avoid YAML parsing issues
+            mock_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
+
             bootloader_config = Mock()
             bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
             mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
