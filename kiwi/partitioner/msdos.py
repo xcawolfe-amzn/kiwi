@@ -69,20 +69,24 @@ class PartitionerMsDos(PartitionerBase):
         :rtype: int
         """
         is_root = name in ['p.lxroot', 'p.lxlvm', 'p.lxraid']
-        partition_id = self.get_next_id(is_root)
         
         if self.extended_layout:
-            if partition_id < 3:
+            # Check current partition_id to determine logic path (for backward compatibility)
+            current_id = self.partition_id
+            partition_id = self.get_next_id(is_root)
+            
+            if current_id < 3:
                 # in primary boundary
                 self._create_primary(name, mbsize, type_name, flags, partition_id)
-            elif partition_id == 3:
+            elif current_id == 3:
                 # at primary boundary, create extended + logical
                 self._create_extended(name, partition_id)
                 self._create_logical(name, mbsize, type_name, flags, partition_id)
-            elif partition_id > 3:
+            else:
                 # in logical boundary
                 self._create_logical(name, mbsize, type_name, flags, partition_id)
         else:
+            partition_id = self.get_next_id(is_root)
             self._create_primary(name, mbsize, type_name, flags, partition_id)
         
         return partition_id
