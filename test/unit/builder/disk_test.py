@@ -1868,14 +1868,11 @@ class TestDiskBuilder:
             mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
 
             # Mock firmware to return real partition table type
-            with patch('kiwi.storage.disk.Disk') as mock_disk_class:
-                mock_disk = Mock()
-                mock_disk.get_public_partition_id_map.return_value = {
+            with patch('kiwi.storage.disk.Disk.get_public_partition_id_map') as mock_get_partition_map:
+                mock_get_partition_map.return_value = {
                     'kiwi_RootPart': '1',
                     'kiwi_BootPart': '2'
                 }
-                mock_disk.partitioner = spy_partitioner
-                mock_disk_class.return_value.__enter__.return_value = mock_disk
 
                 bootloader_config = Mock()
                 bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
