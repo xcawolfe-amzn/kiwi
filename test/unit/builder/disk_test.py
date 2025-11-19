@@ -1826,7 +1826,7 @@ class TestDiskBuilder:
 
         disk_subformat.create_image_format.assert_called_once_with()
 
-    @patch('kiwi.builder.disk.RuntimeConfig')
+    @patch('kiwi.storage.disk.RuntimeConfig')
     @patch('kiwi.builder.disk.create_boot_loader_config')
     @patch('kiwi.builder.disk.FileSystem.new')
     @patch('kiwi.builder.disk.Command.run')
