@@ -1863,6 +1863,9 @@ class TestDiskBuilder:
         
         disk.partitioner.create.side_effect = track_create
         
+        # Ensure set_ec2_layout method exists and is trackable
+        disk.partitioner.set_ec2_layout = Mock()
+        
         bootloader_config = Mock()
         bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
         mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
