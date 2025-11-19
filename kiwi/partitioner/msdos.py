@@ -73,17 +73,18 @@ class PartitionerMsDos(PartitionerBase):
         if self.extended_layout:
             # Check current partition_id to determine logic path (for backward compatibility)
             current_id = self.partition_id
-            partition_id = self.get_next_id(is_root)
             
             if current_id < 3:
-                # in primary boundary
+                partition_id = self.get_next_id(is_root)
                 self._create_primary(name, mbsize, type_name, flags, partition_id)
             elif current_id == 3:
-                # at primary boundary, create extended + logical
-                self._create_extended(name, partition_id)
-                self._create_logical(name, mbsize, type_name, flags, partition_id)
+                # at primary boundary, create extended + logical with current ID
+                partition_id = self.get_next_id(is_root)  # This increments to 4
+                self._create_extended(name, current_id)  # Use 3 for extended
+                self._create_logical(name, mbsize, type_name, flags, current_id)  # Use 3 for logical
+                partition_id = current_id  # Return 3, not 4
             else:
-                # in logical boundary
+                partition_id = self.get_next_id(is_root)
                 self._create_logical(name, mbsize, type_name, flags, partition_id)
         else:
             partition_id = self.get_next_id(is_root)
