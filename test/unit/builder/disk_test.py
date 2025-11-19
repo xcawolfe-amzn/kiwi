@@ -1827,6 +1827,7 @@ class TestDiskBuilder:
         disk_subformat.create_image_format.assert_called_once_with()
 
     @patch('kiwi.storage.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.RuntimeConfig')
     @patch('kiwi.builder.disk.create_boot_loader_config')
     @patch('kiwi.builder.disk.FileSystem.new')
     @patch('kiwi.builder.disk.Command.run')
@@ -1834,7 +1835,7 @@ class TestDiskBuilder:
     @patch('os.path.exists')
     def test_create_disk_ec2_layout_root_gets_partition_id_1(
         self, mock_exists, mock_grub_dir, mock_command, mock_fs,
-        mock_create_boot_loader_config, mock_runtime_config
+        mock_create_boot_loader_config, mock_builder_runtime_config, mock_storage_runtime_config
     ):
         """Test EC2 layout explicitly assigns partition ID 1 to root partition"""
         
@@ -1863,7 +1864,8 @@ class TestDiskBuilder:
             mock_partitioner_new.return_value = spy_partitioner
 
             # Mock RuntimeConfig to avoid YAML parsing issues
-            mock_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
+            mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
+            mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
 
             bootloader_config = Mock()
             bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
