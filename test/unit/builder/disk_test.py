@@ -1826,6 +1826,52 @@ class TestDiskBuilder:
 
         disk_subformat.create_image_format.assert_called_once_with()
 
+    @patch('kiwi.builder.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.Disk')
+    @patch('kiwi.builder.disk.create_boot_loader_config')
+    @patch('kiwi.builder.disk.FileSystem.new')
+    @patch('kiwi.builder.disk.Command.run')
+    @patch('kiwi.builder.disk.Defaults.get_grub_boot_directory_name')
+    @patch('os.path.exists')
+    def test_create_disk_ec2_layout_root_gets_partition_id_1(
+        self, mock_exists, mock_grub_dir, mock_command, mock_fs,
+        mock_create_boot_loader_config, mock_Disk, mock_runtime_config
+    ):
+        """Test EC2 layout explicitly assigns partition ID 1 to root partition"""
+        disk = self._get_disk_instance()
+        mock_Disk.return_value.__enter__.return_value = disk
+        
+        # Track partition IDs returned by create calls
+        root_partition_id = None
+        def track_create(*args, **kwargs):
+            nonlocal root_partition_id
+            if len(args) > 0 and 'p.lxroot' in str(args[0]):  # Root partition
+                root_partition_id = 1
+                return 1
+            else:  # Other partitions
+                return 2
+        
+        disk.partitioner.create.side_effect = track_create
+        
+        bootloader_config = Mock()
+        mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+        mock_exists.return_value = True
+
+        description = XMLDescription('../data/example_ec2_layout.xml')
+        disk_builder = DiskBuilder(
+            XMLState(description.load()), 'target_dir', 'root_dir'
+        )
+        disk_builder.ec2_layout = True
+
+        with patch('builtins.open'):
+            disk_builder.create_disk()
+
+        # Verify EC2 layout was enabled
+        disk.partitioner.set_ec2_layout.assert_called_once()
+        
+        # Explicitly verify root partition got ID 1
+        assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
+
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
         provider = Mock()

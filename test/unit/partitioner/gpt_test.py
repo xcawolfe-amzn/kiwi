@@ -123,3 +123,17 @@ class TestPartitionerGpt:
         mock_Command_run.assert_called_once_with(
             ['sgdisk', '--typecode', '42:ID', '/dev/loop0']
         )
+
+    @patch('kiwi.partitioner.gpt.Command.run')
+    def test_create_ec2_layout_root_gets_partition_id_1(self, mock_command):
+        """Test EC2 layout assigns partition ID 1 to root partitions"""
+        self.partitioner.set_ec2_layout()
+        
+        # Create EFI partition first
+        efi_id = self.partitioner.create('p.UEFI', 100, 't.efi')
+        
+        # Create root partition - should get ID 1 even though created second
+        root_id = self.partitioner.create('p.lxroot', 1000, 't.linux')
+        
+        assert root_id == 1, f"Root partition should get ID 1 in EC2 layout, got {root_id}"
+        assert efi_id == 2, f"EFI partition should get ID 2 in EC2 layout, got {efi_id}"
