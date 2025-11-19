@@ -1827,7 +1827,6 @@ class TestDiskBuilder:
         disk_subformat.create_image_format.assert_called_once_with()
 
     @patch('kiwi.builder.disk.RuntimeConfig')
-    @patch('kiwi.builder.disk.Disk')
     @patch('kiwi.builder.disk.create_boot_loader_config')
     @patch('kiwi.builder.disk.FileSystem.new')
     @patch('kiwi.builder.disk.Command.run')
@@ -1835,24 +1834,14 @@ class TestDiskBuilder:
     @patch('os.path.exists')
     def test_create_disk_ec2_layout_root_gets_partition_id_1(
         self, mock_exists, mock_grub_dir, mock_command, mock_fs,
-        mock_create_boot_loader_config, mock_Disk, mock_runtime_config
+        mock_create_boot_loader_config, mock_runtime_config
     ):
         """Test EC2 layout explicitly assigns partition ID 1 to root partition"""
-        disk = self._get_disk_instance()
-        mock_Disk.return_value.__enter__.return_value = disk
         
-        # Mock device objects to return proper strings
-        mock_root_device = Mock()
-        mock_root_device.get_device.return_value = '/dev/root-device'
-        mock_swap_device = Mock()
-        mock_swap_device.get_device.return_value = '/dev/swap-device'
-        disk.get_device = Mock(return_value={
-            'root': mock_root_device,
-            'swap': mock_swap_device
-        })
-        
-        # Track partition IDs returned by create calls
+        # Track partition IDs and set_ec2_layout calls
         root_partition_id = None
+        ec2_layout_called = False
+        
         def track_create(*args, **kwargs):
             nonlocal root_partition_id
             if len(args) > 0 and 'p.lxroot' in str(args[0]):  # Root partition
@@ -1860,31 +1849,38 @@ class TestDiskBuilder:
                 return 1
             else:  # Other partitions
                 return 2
-        
-        disk.partitioner.create.side_effect = track_create
-        
-        # Ensure set_ec2_layout method exists and is trackable
-        disk.partitioner.set_ec2_layout = Mock()
-        
-        bootloader_config = Mock()
-        bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
-        mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
-        mock_exists.return_value = True
 
-        description = XMLDescription('../data/example_ec2_layout.xml')
-        disk_builder = DiskBuilder(
-            XMLState(description.load()), 'target_dir', 'root_dir'
-        )
-        disk_builder.ec2_layout = True
+        def track_set_ec2_layout(enabled):
+            nonlocal ec2_layout_called
+            ec2_layout_called = enabled
 
-        with patch('builtins.open'):
-            disk_builder.create_disk()
+        # Patch Partitioner.new to return our spy partitioner
+        with patch('kiwi.storage.disk.Partitioner.new') as mock_partitioner_new:
+            spy_partitioner = Mock()
+            spy_partitioner.create.side_effect = track_create
+            spy_partitioner.set_ec2_layout.side_effect = track_set_ec2_layout
+            spy_partitioner.set_start_sector = Mock()
+            mock_partitioner_new.return_value = spy_partitioner
 
-        # Verify EC2 layout was enabled
-        disk.partitioner.set_ec2_layout.assert_called_once_with(True)
-        
-        # Explicitly verify root partition got ID 1
-        assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
+            bootloader_config = Mock()
+            bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
+            mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+            mock_exists.return_value = True
+
+            description = XMLDescription('../data/example_ec2_layout.xml')
+            disk_builder = DiskBuilder(
+                XMLState(description.load()), 'target_dir', 'root_dir'
+            )
+            disk_builder.ec2_layout = True
+
+            with patch('builtins.open'):
+                disk_builder.create_disk()
+
+            # Verify EC2 layout was enabled
+            assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+            
+            # Explicitly verify root partition got ID 1
+            assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
