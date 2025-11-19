@@ -47,7 +47,7 @@ class TestPartitionerBase:
 
     def test_get_next_id_ec2_layout_root_partition(self):
         """Test EC2 layout assigns ID 1 to root partitions"""
-        self.partitioner.set_ec2_layout()
+        self.partitioner.set_ec2_layout(True)
         
         # Root partition should get ID 1
         root_id = self.partitioner.get_next_id(is_root=True)

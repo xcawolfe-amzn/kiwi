@@ -1841,6 +1841,11 @@ class TestDiskBuilder:
         disk = self._get_disk_instance()
         mock_Disk.return_value.__enter__.return_value = disk
         
+        # Mock device objects to return proper strings
+        mock_root_device = Mock()
+        mock_root_device.get_device.return_value = '/dev/root-device'
+        disk.get_device = Mock(return_value={'root': mock_root_device})
+        
         # Track partition IDs returned by create calls
         root_partition_id = None
         def track_create(*args, **kwargs):
@@ -1854,6 +1859,7 @@ class TestDiskBuilder:
         disk.partitioner.create.side_effect = track_create
         
         bootloader_config = Mock()
+        bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
         mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
         mock_exists.return_value = True
 
@@ -1867,7 +1873,7 @@ class TestDiskBuilder:
             disk_builder.create_disk()
 
         # Verify EC2 layout was enabled
-        disk.partitioner.set_ec2_layout.assert_called_once()
+        disk.partitioner.set_ec2_layout.assert_called_once_with(True)
         
         # Explicitly verify root partition got ID 1
         assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"

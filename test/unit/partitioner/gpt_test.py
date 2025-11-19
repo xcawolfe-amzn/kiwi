@@ -127,7 +127,7 @@ class TestPartitionerGpt:
     @patch('kiwi.partitioner.gpt.Command.run')
     def test_create_ec2_layout_root_gets_partition_id_1(self, mock_command):
         """Test EC2 layout assigns partition ID 1 to root partitions"""
-        self.partitioner.set_ec2_layout()
+        self.partitioner.set_ec2_layout(True)
         
         # Create EFI partition first
         efi_id = self.partitioner.create('p.UEFI', 100, 't.efi')
