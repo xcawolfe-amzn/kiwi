@@ -1867,32 +1867,28 @@ class TestDiskBuilder:
             mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
             mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
 
-            # Mock firmware to return real partition table type
-            with patch('kiwi.storage.disk.Disk.get_public_partition_id_map') as mock_get_partition_map:
-                mock_get_partition_map.return_value = {
-                    'kiwi_RootPart': '1',
-                    'kiwi_BootPart': '2'
-                }
+            # Mock only external commands and file operations
+            with patch('kiwi.storage.disk.Command.run'):
+                with patch('kiwi.storage.device_provider.DeviceProvider'):
+                    bootloader_config = Mock()
+                    bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
+                    mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+                    mock_exists.return_value = True
 
-                bootloader_config = Mock()
-                bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
-                mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
-                mock_exists.return_value = True
+                    description = XMLDescription('../../test/data/example_ec2_layout.xml')
+                    disk_builder = DiskBuilder(
+                        XMLState(description.load()), 'target_dir', 'root_dir'
+                    )
+                    disk_builder.ec2_layout = True
 
-                description = XMLDescription('../../test/data/example_ec2_layout.xml')
-                disk_builder = DiskBuilder(
-                    XMLState(description.load()), 'target_dir', 'root_dir'
-                )
-                disk_builder.ec2_layout = True
+                    with patch('builtins.open'):
+                        disk_builder.create_disk()
 
-                with patch('builtins.open'):
-                    disk_builder.create_disk()
-
-                # Verify EC2 layout was enabled
-                assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
-                
-                # Explicitly verify root partition got ID 1
-                assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
+                    # Verify EC2 layout was enabled
+                    assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+                    
+                    # Explicitly verify root partition got ID 1
+                    assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
