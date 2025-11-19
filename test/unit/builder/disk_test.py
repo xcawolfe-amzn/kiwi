@@ -1879,7 +1879,7 @@ class TestDiskBuilder:
                     disk_builder = DiskBuilder(
                         XMLState(description.load()), 'target_dir', 'root_dir'
                     )
-                    disk_builder.ec2_layout = True
+                    # ec2_layout should be True from XML, don't override it
 
                     with patch('builtins.open'):
                         disk_builder.create_disk()
