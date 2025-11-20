@@ -1926,12 +1926,16 @@ class TestDiskBuilder:
                     if root_partitions:
                         last_root = root_partitions[-1]
                         assert partition_creation_order[-1] == last_root, f"Root partition should be created last, but creation order was: {partition_creation_order}"
+                    else:
+                        assert False, f"Root partitions were not created"
                     
                     # Verify root partition got ID 1 by checking the partition ID map
                     if result_disk:
                         partition_map = result_disk.get_public_partition_id_map()
                         root_partition_id = partition_map.get('kiwi_RootPart')
                         assert root_partition_id == 1, f"Root partition should get ID '1', got {root_partition_id}"
+                    else:
+                        assert False, f"Unable to capture disk to check paritions"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
