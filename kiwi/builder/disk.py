@@ -606,7 +606,7 @@ class DiskBuilder:
             loop_provider,
             self.disk_start_sector,
             extended_layout=bool(self.dosparttable_extended_layout),
-            ec2_layout=self.ec2_layout
+            ec2_part_layout=self.ec2_part_layout
         )
 
     def _bootloader_instance(self, disk: Disk) -> BootLoaderConfigBase:
