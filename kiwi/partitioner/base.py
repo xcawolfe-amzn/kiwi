@@ -47,6 +47,8 @@ class PartitionerBase:
         self.partition_id = 0
         self.start_sector = start_sector
         self.extended_layout = extended_layout
+        self.ec2_part_layout = False
+        self.reserved_ids: set[int] = set()
 
         self.flag_map: Dict[str, Union[bool, str, None]] = {}
 
@@ -72,9 +74,42 @@ class PartitionerBase:
         """
         return self.partition_id
 
+    def set_ec2_part_layout(self, enabled: bool) -> None:
+        """
+        Enable EC2 partition layout mode where root partition gets ID 1
+
+        :param bool enabled: Enable EC2 partition layout
+        """
+        self.ec2_part_layout = enabled
+        if enabled:
+            self.reserved_ids.add(1)  # Reserve partition 1 for root
+
+    def get_next_id(self, is_root: bool = False) -> int:
+        """
+        Get next partition ID, handling EC2 layout special numbering
+
+        :param bool is_root: True if this is the root partition
+        :return: partition ID to use
+        :rtype: int
+        """
+        if self.ec2_part_layout and is_root:
+            # For EC2 root partition, use ID 1 but track the highest ID used
+            if self.partition_id == 0:
+                self.partition_id = 1
+            self.partition_id = 1  # Always set current ID to 1 for root
+            return 1
+        elif self.ec2_part_layout:
+            self.partition_id += 1
+            while self.partition_id in self.reserved_ids:
+                self.partition_id += 1
+            return self.partition_id
+        else:
+            self.partition_id += 1
+            return self.partition_id
+
     def create(
         self, name: str, mbsize: int, type_name: str, flags: List[str] = []
-    ):
+    ) -> int:
         """
         Create partition
 
@@ -84,6 +119,8 @@ class PartitionerBase:
         :param int mbsize: unused
         :param string type_name: unused
         :param list flags: unused
+        :return: partition ID that was used
+        :rtype: int
         """
         raise NotImplementedError
 

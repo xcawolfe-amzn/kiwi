@@ -35,7 +35,7 @@ class TestDisk:
         self.tempfile.name = 'tempfile'
 
         self.partitioner = mock.Mock()
-        self.partitioner.create = mock.Mock()
+        self.partitioner.create = mock.Mock(return_value=1)
         self.partitioner.get_id = mock.Mock(
             return_value=1
         )

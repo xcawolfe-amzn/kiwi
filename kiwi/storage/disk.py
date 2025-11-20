@@ -56,7 +56,8 @@ class Disk(DeviceProvider):
     """
     def __init__(
         self, table_type: str, storage_provider: DeviceProvider,
-        start_sector: int = None, extended_layout: bool = False
+        start_sector: int = None, extended_layout: bool = False,
+        ec2_part_layout: bool = False
     ):
         """
         Construct a new Disk layout object
@@ -71,6 +72,9 @@ class Disk(DeviceProvider):
             partition to be an extended partition and all following
             partitions will be placed as logical partitions inside
             of that extended partition
+        :param bool ec2_layout:
+            If set to true, root partition will be numbered as partition 1
+            regardless of creation order
         """
         self.partition_mapper = RuntimeConfig().get_mapper_tool()
         #: the underlaying device provider
@@ -102,6 +106,7 @@ class Disk(DeviceProvider):
         self.partitioner = Partitioner.new(
             table_type, storage_provider, start_sector, extended_layout
         )
+        self.partitioner.set_ec2_part_layout(ec2_part_layout)
 
         self.table_type = table_type
 
@@ -164,10 +169,10 @@ class Disk(DeviceProvider):
                     format(entry.mbsize)
                 )
             id_name = f'kiwi_{map_name.title()}Part'
-            self.partitioner.create(
+            partition_id = self.partitioner.create(
                 entry.partition_name, entry.mbsize, entry.partition_type
             )
-            self._add_to_map(map_name)
+            self._add_to_map(map_name, partition_id)
             self._add_to_public_id_map(id_name)
             part_uuid = self.gUID.get(entry.partition_name)
             if part_uuid:
@@ -188,8 +193,8 @@ class Disk(DeviceProvider):
         (mbsize, mbsize_clone) = Disk._parse_size(mbsize)
         if clone:
             self._create_clones('root', clone, 't.linux', mbsize_clone)
-        self.partitioner.create('p.lxroot', mbsize, 't.linux')
-        self._add_to_map('root')
+        partition_id = self.partitioner.create('p.lxroot', mbsize, 't.linux')
+        self._add_to_map('root', partition_id)
         self._add_to_public_id_map('kiwi_RootPart')
         if 'kiwi_ROPart' in self.public_partition_id_map:
             self._add_to_public_id_map('kiwi_RWPart')
@@ -213,8 +218,8 @@ class Disk(DeviceProvider):
         (mbsize, mbsize_clone) = Disk._parse_size(mbsize)
         if clone:
             self._create_clones('root', clone, 't.lvm', mbsize_clone)
-        self.partitioner.create('p.lxlvm', mbsize, 't.lvm')
-        self._add_to_map('root')
+        partition_id = self.partitioner.create('p.lxlvm', mbsize, 't.lvm')
+        self._add_to_map('root', partition_id)
         self._add_to_public_id_map('kiwi_RootPart')
         root_uuid = self.gUID.get('root')
         if root_uuid:
@@ -236,8 +241,8 @@ class Disk(DeviceProvider):
         (mbsize, mbsize_clone) = Disk._parse_size(mbsize)
         if clone:
             self._create_clones('root', clone, 't.raid', mbsize_clone)
-        self.partitioner.create('p.lxraid', mbsize, 't.raid')
-        self._add_to_map('root')
+        partition_id = self.partitioner.create('p.lxraid', mbsize, 't.raid')
+        self._add_to_map('root', partition_id)
         self._add_to_public_id_map('kiwi_RootPart')
         self._add_to_public_id_map('kiwi_RaidPart')
         root_uuid = self.gUID.get('root')
@@ -261,8 +266,8 @@ class Disk(DeviceProvider):
         (mbsize, mbsize_clone) = Disk._parse_size(mbsize)
         if clone:
             self._create_clones('root', clone, 't.linux', mbsize_clone)
-        self.partitioner.create('p.lxreadonly', mbsize, 't.linux')
-        self._add_to_map('readonly')
+        partition_id = self.partitioner.create('p.lxreadonly', mbsize, 't.linux')
+        self._add_to_map('readonly', partition_id)
         self._add_to_public_id_map('kiwi_ROPart')
         root_uuid = self.gUID.get('root')
         if root_uuid:
@@ -282,8 +287,8 @@ class Disk(DeviceProvider):
         (mbsize, mbsize_clone) = Disk._parse_size(mbsize)
         if clone:
             self._create_clones('boot', clone, 't.linux', mbsize_clone)
-        self.partitioner.create('p.lxboot', mbsize, 't.linux')
-        self._add_to_map('boot')
+        partition_id = self.partitioner.create('p.lxboot', mbsize, 't.linux')
+        self._add_to_map('boot', partition_id)
         self._add_to_public_id_map('kiwi_BootPart')
         boot_uuid = self.gUID.get('xbootldr')
         if boot_uuid:
@@ -300,8 +305,8 @@ class Disk(DeviceProvider):
         :param str mbsize: partition size string
         """
         (mbsize, _) = Disk._parse_size(mbsize)
-        self.partitioner.create('p.prep', mbsize, 't.prep')
-        self._add_to_map('prep')
+        partition_id = self.partitioner.create('p.prep', mbsize, 't.prep')
+        self._add_to_map('prep', partition_id)
         self._add_to_public_id_map('kiwi_PrepPart')
 
     def create_spare_partition(self, mbsize: str):
@@ -313,8 +318,8 @@ class Disk(DeviceProvider):
         :param str mbsize: partition size string
         """
         (mbsize, _) = Disk._parse_size(mbsize)
-        self.partitioner.create('p.spare', mbsize, 't.linux')
-        self._add_to_map('spare')
+        partition_id = self.partitioner.create('p.spare', mbsize, 't.linux')
+        self._add_to_map('spare', partition_id)
         self._add_to_public_id_map('kiwi_SparePart')
 
     def create_swap_partition(self, mbsize: str):
@@ -326,8 +331,8 @@ class Disk(DeviceProvider):
         :param str mbsize: partition size string
         """
         (mbsize, _) = Disk._parse_size(mbsize)
-        self.partitioner.create('p.swap', mbsize, 't.swap')
-        self._add_to_map('swap')
+        partition_id = self.partitioner.create('p.swap', mbsize, 't.swap')
+        self._add_to_map('swap', partition_id)
         self._add_to_public_id_map('kiwi_SwapPart')
         swap_uuid = self.gUID.get('swap')
         if swap_uuid:
@@ -344,8 +349,8 @@ class Disk(DeviceProvider):
         :param str mbsize: partition size string
         """
         (mbsize, _) = Disk._parse_size(mbsize)
-        self.partitioner.create('p.legacy', mbsize, 't.csm')
-        self._add_to_map('efi_csm')
+        partition_id = self.partitioner.create('p.legacy', mbsize, 't.csm')
+        self._add_to_map('efi_csm', partition_id)
         self._add_to_public_id_map('kiwi_BiosGrub')
 
     def create_efi_partition(self, mbsize: str):
@@ -357,8 +362,8 @@ class Disk(DeviceProvider):
         :param str mbsize: partition size string
         """
         (mbsize, _) = Disk._parse_size(mbsize)
-        self.partitioner.create('p.UEFI', mbsize, 't.efi')
-        self._add_to_map('efi')
+        partition_id = self.partitioner.create('p.UEFI', mbsize, 't.efi')
+        self._add_to_map('efi', partition_id)
         self._add_to_public_id_map('kiwi_EfiPart')
         esp_uuid = self.gUID.get('esp')
         if esp_uuid:
@@ -563,9 +568,12 @@ class Disk(DeviceProvider):
             value = self.partitioner.get_id()
         self.public_partition_id_map[name] = value
 
-    def _add_to_map(self, name):
+    def _add_to_map(self, name, partition_id=None):
         device_node = None
-        partition_number = format(self.partitioner.get_id())
+        if partition_id is None:
+            partition_number = format(self.partitioner.get_id())
+        else:
+            partition_number = format(partition_id)
         if self.storage_provider.is_loop():
             device_base = os.path.basename(self.storage_provider.get_device())
             if self.partition_mapper == 'kpartx':

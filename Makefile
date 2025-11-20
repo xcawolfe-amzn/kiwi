@@ -48,8 +48,14 @@ kiwi/schema/kiwi.rng: kiwi/schema/kiwi.rnc
 	# whenever the schema is changed this target will convert
 	# the short form of the RelaxNG schema to the format used
 	# in code and auto generates the python data structures
-	@type -p trang &>/dev/null || \
-		(echo "ERROR: trang not found in path: $(PATH)"; exit 1)
+	@if ! command -v trang >/dev/null 2>&1; then \
+		if [ ! -f trang-20220510.jar ]; then \
+			wget -q https://github.com/relaxng/jing-trang/releases/download/V20220510/trang-20220510.zip && \
+			unzip -qo trang-20220510.zip && \
+			rm trang-20220510.zip; \
+		fi; \
+		alias trang='java -jar trang-20220510/trang.jar'; \
+	fi; \
 	trang -I rnc -O rng kiwi/schema/kiwi.rnc kiwi/schema/kiwi.rng
 	# XML parser code is auto generated from schema using generateDS
 	# http://pythonhosted.org/generateDS
