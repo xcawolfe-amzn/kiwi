@@ -1890,9 +1890,9 @@ class TestDiskBuilder:
 
                 # Let firmware determine table_type naturally, then inject it into Disk
                 original_disk_init = Disk.__init__
-                def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_layout=False):
+                def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_part_layout=False):
                     # Force table_type to be 'gpt' from XML firmware="efi"
-                    return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_layout)
+                    return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_part_layout)
                 
                 with patch.object(Disk, '__init__', mock_disk_init):
                     bootloader_config = Mock()
