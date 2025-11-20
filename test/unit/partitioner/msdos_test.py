@@ -123,24 +123,24 @@ class TestPartitionerMsDos:
     ):
         self.partitioner.create('name', 100, 't.linux')
         mock_create_primary.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 1
         )
         mock_create_primary.reset_mock()
         self.partitioner_extended.create('name', 100, 't.linux')
         mock_create_primary.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 1
         )
         self.partitioner_extended.partition_id = 3
         self.partitioner_extended.create('name', 100, 't.linux')
-        mock_create_extended.assert_called_once_with('name')
+        mock_create_extended.assert_called_once_with('name', 3)
         mock_create_logical.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 3
         )
         mock_create_logical.reset_mock()
         self.partitioner_extended.partition_id = 7
         self.partitioner_extended.create('name', 100, 't.linux')
         mock_create_logical.assert_called_once_with(
-            'name', 100, 't.linux', []
+            'name', 100, 't.linux', [], 8
         )
 
     @patch('kiwi.partitioner.msdos.Command.run')
@@ -217,3 +217,23 @@ class TestPartitionerMsDos:
         assert m_open.return_value.write.call_args_list == [
             call('d\n1\nn\np\n1\n4096\n\nw\nq\n')
         ]
+
+    @patch('kiwi.partitioner.msdos.Command.run')
+    def test_create_with_flags_list(self, mock_command):
+        with patch.object(self.partitioner, 'set_flag') as mock_set_flag:
+            self.partitioner.create('name', 100, 'primary', ['boot', 'active'])
+            # Verify set_flag was called for type_name and each flag
+            assert mock_set_flag.call_count >= 3  # type + 2 flags
+            mock_set_flag.assert_any_call(1, 'primary')
+            mock_set_flag.assert_any_call(1, 'boot')
+            mock_set_flag.assert_any_call(1, 'active')
+
+    def test_set_all_flags_without_partition_id(self):
+        """Test _set_all_flags without partition_id to cover line 257"""
+        self.partitioner.partition_id = 2  # Set a partition ID
+        with patch.object(self.partitioner, 'set_flag') as mock_set_flag:
+            # Call without partition_id parameter to trigger the None check
+            self.partitioner._set_all_flags('primary', ['boot'])
+            # Should use self.partition_id (2) since partition_id was None
+            mock_set_flag.assert_any_call(2, 'primary')
+            mock_set_flag.assert_any_call(2, 'boot')

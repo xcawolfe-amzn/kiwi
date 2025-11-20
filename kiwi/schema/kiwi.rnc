@@ -1625,6 +1625,44 @@ div {
             sch:param [ name = "attr" value = "spare_part_is_last" ]
             sch:param [ name = "types" value = "oem" ]
         ]
+    k.type.ec2_part_layout.attribute =
+        ## Specify if the disk layout should follow EC2 conventions:
+        ## - Root partition is created last but numbered as partition 1
+        ## - Root filesystem can expand to fill remaining disk space
+        ## - Cannot be used with oem_resize (mutually exclusive)
+        ## - Cannot be used with spare_part_is_last (mutually exclusive)
+        attribute ec2_part_layout { xsd:boolean }
+        >> sch:pattern [ id = "ec2_part_layout" is-a = "image_type"
+            sch:param [ name = "attr" value = "ec2_part_layout" ]
+            sch:param [ name = "types" value = "oem" ]
+        ]
+        >> sch:pattern [ id = "ec2_part_layout_no_oem_resize"
+            sch:rule [
+                context = "type[@ec2_part_layout='true' and @oem_resize='true']"
+                sch:assert [
+                    test = "false()"
+                    "ec2_part_layout cannot be used with oem_resize: they are mutually exclusive"
+                ]
+            ]
+        ]
+        >> sch:pattern [ id = "ec2_part_layout_no_spare_part_is_last"
+            sch:rule [
+                context = "type[@ec2_part_layout='true' and @spare_part_is_last='true']"
+                sch:assert [
+                    test = "false()"
+                    "ec2_part_layout cannot be used with spare_part_is_last: they are mutually exclusive"
+                ]
+            ]
+        ]
+        >> sch:pattern [ id = "ec2_part_layout_no_root_clone"
+            sch:rule [
+                context = "type[@ec2_part_layout='true' and @root_clone]"
+                sch:assert [
+                    test = "false()"
+                    "ec2_part_layout cannot be used with root_clone: they are mutually exclusive"
+                ]
+            ]
+        ]
     k.type.bootpartsize.attribute =
         ## For images with a separate boot partition this attribute
         ## specifies the size in MB. If not set the min bootpart
@@ -2417,6 +2455,7 @@ div {
         k.type.spare_part_fs.attribute? &
         k.type.spare_part_fs_attributes.attribute? &
         k.type.spare_part_is_last.attribute? &
+        k.type.ec2_part_layout.attribute? &
         k.type.target_blocksize.attribute? &
         k.type.target_removable.attribute? &
         k.type.selinux_policy.attribute? &

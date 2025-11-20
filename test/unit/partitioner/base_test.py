@@ -44,3 +44,15 @@ class TestPartitionerBase:
 
     def test_set_start_sector(self):
         assert self.partitioner.set_start_sector(4096) is None
+
+    def test_get_next_id_ec2_part_layout_root_partition(self):
+        """Test EC2 partition layout assigns ID 1 to root partitions"""
+        self.partitioner.set_ec2_part_layout(True)
+        
+        # Root partition should get ID 1
+        root_id = self.partitioner.get_next_id(is_root=True)
+        assert root_id == 1, f"Root partition should get ID 1 in EC2 layout, got {root_id}"
+        
+        # Non-root partition should get next available ID
+        non_root_id = self.partitioner.get_next_id(is_root=False)
+        assert non_root_id == 2, f"Non-root partition should get ID 2, got {non_root_id}"

@@ -18,6 +18,7 @@ from kiwi.defaults import Defaults
 from kiwi.xml_description import XMLDescription
 from kiwi.xml_state import XMLState
 from kiwi.builder.disk import DiskBuilder
+from kiwi.storage.disk import Disk
 from kiwi.storage.disk import ptable_entry_type
 from kiwi.storage.mapped_device import MappedDevice
 from kiwi.xml_state import DracutT
@@ -1826,6 +1827,116 @@ class TestDiskBuilder:
 
         disk_subformat.create_image_format.assert_called_once_with()
 
+    @patch('kiwi.storage.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.create_boot_loader_config')
+    @patch('kiwi.builder.disk.FileSystem.new')
+    @patch('kiwi.builder.disk.Command.run')
+    @patch('kiwi.builder.disk.Defaults.get_grub_boot_directory_name')
+    @patch('os.path.exists')
+    def test_create_disk_ec2_layout_root_gets_partition_id_1(
+        self, mock_exists, mock_grub_dir, mock_command, mock_fs,
+        mock_create_boot_loader_config, mock_builder_runtime_config, mock_storage_runtime_config
+    ):
+        """Test EC2 layout explicitly assigns partition ID 1 to root partition"""
+        
+        # Track partition IDs and set_ec2_part_layout calls
+        root_partition_id = None
+        ec2_layout_called = False
+        
+        def track_create(*args, **kwargs):
+            nonlocal root_partition_id
+            if len(args) > 0 and 'p.lxroot' in str(args[0]):  # Root partition
+                root_partition_id = 1
+                return 1
+            else:  # Other partitions
+                return 2
+
+        # Track if set_ec2_part_layout was called by patching the method
+        ec2_layout_called = False
+        original_set_ec2_part_layout = None
+        partition_creation_order = []
+        
+        def track_set_ec2_part_layout(self, enabled):
+            nonlocal ec2_layout_called
+            ec2_layout_called = enabled
+            # Call the real method to preserve functionality
+            original_set_ec2_part_layout(self, enabled)
+
+        def track_partition_creation(original_create):
+            def wrapper(self, name, mbsize, type_name, flags=None):
+                nonlocal partition_creation_order
+                result = original_create(self, name, mbsize, type_name, flags)
+                partition_creation_order.append(name)
+                return result
+            return wrapper
+
+        # Let real partitioner run, only mock external commands
+        with patch('kiwi.command.Command.run'):
+            with patch('kiwi.storage.device_provider.DeviceProvider'):
+                # Patch set_ec2_part_layout to track calls while preserving real behavior
+                from kiwi.partitioner.base import PartitionerBase
+                original_set_ec2_part_layout = PartitionerBase.set_ec2_part_layout
+                PartitionerBase.set_ec2_part_layout = track_set_ec2_part_layout
+
+                # Track partition creation order
+                from kiwi.partitioner.gpt import PartitionerGpt
+                original_gpt_create = PartitionerGpt.create
+                PartitionerGpt.create = track_partition_creation(original_gpt_create)
+
+                # Mock RuntimeConfig to avoid YAML parsing issues
+                mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
+                mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
+
+                # Let firmware determine table_type naturally, then inject it into Disk
+                original_disk_init = Disk.__init__
+                def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_part_layout=False):
+                    # Force table_type to be 'gpt' from XML firmware="efi"
+                    return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_part_layout)
+                
+                with patch.object(Disk, '__init__', mock_disk_init):
+                    bootloader_config = Mock()
+                    bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
+                    mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+                    mock_exists.return_value = True
+
+                    description = XMLDescription('../../test/data/example_ec2_layout.xml')
+                    disk_builder = DiskBuilder(
+                        XMLState(description.load()), 'target_dir', 'root_dir'
+                    )
+                    # ec2_layout should be True from XML, don't override it
+
+                    with patch('builtins.open'):
+                        result_disk = None
+                        # Capture the disk instance to check partition mapping
+                        original_disk_enter = Disk.__enter__
+                        def capture_disk(self):
+                            nonlocal result_disk
+                            result_disk = self
+                            return original_disk_enter(self)
+                        
+                        with patch.object(Disk, '__enter__', capture_disk):
+                            disk_builder.create_disk()
+
+                    # Verify EC2 layout was enabled
+                    assert ec2_layout_called == True, "set_ec2_part_layout should have been called with True"
+                    
+                    # Verify root partition was created last (EC2 layout requirement)
+                    root_partitions = [name for name in partition_creation_order if 'root' in name.lower()]
+                    if root_partitions:
+                        last_root = root_partitions[-1]
+                        assert partition_creation_order[-1] == last_root, f"Root partition should be created last, but creation order was: {partition_creation_order}"
+                    else:
+                        assert False, f"Root partitions were not created"
+                    
+                    # Verify root partition got ID 1 by checking the partition ID map
+                    if result_disk:
+                        partition_map = result_disk.get_public_partition_id_map()
+                        root_partition_id = partition_map.get('kiwi_RootPart')
+                        assert root_partition_id == 1, f"Root partition should get ID '1', got {root_partition_id}"
+                    else:
+                        assert False, f"Unable to capture disk to check paritions"
+
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
         provider = Mock()
@@ -1848,3 +1959,98 @@ class TestDiskBuilder:
         disk.storage_provider = provider
         disk.partitioner = partitioner
         return disk
+
+    def _get_disk_instance(self) -> Mock:
+        disk = Mock()
+        provider = Mock()
+        partitioner = Mock()
+        disk.get_uuid = Mock(
+            return_value='0815'
+        )
+        disk.get_public_partition_id_map = Mock(
+            return_value=self.id_map_sorted
+        )
+        disk.get_device = Mock(
+            return_value=self.device_map
+        )
+        provider.get_device = Mock(
+            return_value='/dev/some-loop'
+        )
+        partitioner.get_id = Mock(
+            return_value=1
+        )
+        disk.storage_provider = provider
+        disk.partitioner = partitioner
+        return disk
+
+    @patch('kiwi.storage.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.create_boot_loader_config')
+    @patch('kiwi.builder.disk.FileSystem.new')
+    @patch('kiwi.builder.disk.Command.run')
+    @patch('kiwi.builder.disk.Defaults.get_grub_boot_directory_name')
+    @patch('os.path.exists')
+    def test_create_disk_overlayroot_no_write_partition_warning(
+        self, mock_exists, mock_grub_dir, mock_command, mock_fs,
+        mock_create_boot_loader_config, mock_builder_runtime_config, mock_storage_runtime_config
+    ):
+        """Test overlayroot with no write partition shows warning"""
+        disk_builder = DiskBuilder(
+            self.xml_state, 'target_dir', 'root_dir'
+        )
+        disk_builder.root_filesystem_is_overlay = True
+        disk_builder.root_filesystem_has_write_partition = False
+        disk_builder.ec2_part_layout = True  # Use EC2 partition layout to hit the right code path
+        
+        mock_disk = Mock()
+        mock_disk.wipe = Mock()
+        mock_disk.get_device.return_value = {'root': '/dev/loop0p1', 'readonly': '/dev/loop0p2'}
+        
+        # Mock all firmware methods to skip partition creation and reach overlayroot logic
+        with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
+            with patch.object(disk_builder.firmware, 'efi_mode', return_value=False):
+                with patch.object(disk_builder.firmware, 'ofw_mode', return_value=False):
+                    with patch('kiwi.builder.disk.log.warning') as mock_warning:
+                        disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
+        
+        mock_warning.assert_any_call(
+            '--> overlayroot explicitly requested no write partition'
+        )
+
+    def test_ec2_layout_lvm_root_partition(self):
+        """Test EC2 layout with LVM root partition creation"""
+        disk_builder = DiskBuilder(self.xml_state, 'target_dir', 'root_dir')
+        disk_builder.volume_manager_name = 'lvm'
+        disk_builder.ec2_part_layout = True
+        disk_builder.root_filesystem_is_overlay = False
+        
+        mock_disk = Mock()
+        mock_disk.wipe = Mock()
+        mock_disk.get_device.return_value = {'root': '/dev/loop0p1'}
+        mock_disk.create_root_lvm_partition = Mock()
+        
+        with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
+            with patch.object(disk_builder.firmware, 'efi_mode', return_value=False):
+                with patch.object(disk_builder.firmware, 'ofw_mode', return_value=False):
+                    disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
+        
+        mock_disk.create_root_lvm_partition.assert_called_once()
+
+    def test_ec2_layout_mdraid_root_partition(self):
+        """Test EC2 layout with mdraid root partition creation"""
+        disk_builder = DiskBuilder(self.xml_state, 'target_dir', 'root_dir')
+        disk_builder.mdraid = True
+        disk_builder.ec2_part_layout = True
+        disk_builder.root_filesystem_is_overlay = False
+        
+        mock_disk = Mock()
+        mock_disk.wipe = Mock()
+        mock_disk.get_device.return_value = {'root': '/dev/loop0p1'}
+        mock_disk.create_root_raid_partition = Mock()
+        
+        with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
+            with patch.object(disk_builder.firmware, 'efi_mode', return_value=False):
+                with patch.object(disk_builder.firmware, 'ofw_mode', return_value=False):
+                    disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
+        
+        mock_disk.create_root_raid_partition.assert_called_once()
