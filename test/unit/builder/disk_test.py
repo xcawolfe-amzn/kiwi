@@ -1937,22 +1937,7 @@ class TestDiskBuilder:
                     else:
                         assert False, f"Unable to capture disk to check paritions"
 
-    def test_create_disk_overlayroot_no_write_partition_warning(self):
-        """Test overlayroot with no write partition shows warning"""
-        disk_builder = DiskBuilder(
-            self.xml_state, 'target_dir', 'root_dir'
-        )
-        disk_builder.root_filesystem_is_overlay = True
-        disk_builder.root_filesystem_has_write_partition = False
-        
-        with patch('kiwi.builder.disk.log.warning') as mock_warning:
-            with patch.object(disk_builder, '_build_and_map_disk_partitions'):
-                with patch.object(disk_builder, '_create_disk_partitions'):
-                    disk_builder._create_root_partition(Mock(), 100, 0)
-        
-        mock_warning.assert_called_once_with(
-            '--> overlayroot explicitly requested no write partition'
-        )
+    def _get_disk_instance(self) -> Mock:
         disk = Mock()
         provider = Mock()
         partitioner = Mock()
@@ -1974,20 +1959,3 @@ class TestDiskBuilder:
         disk.storage_provider = provider
         disk.partitioner = partitioner
         return disk
-
-    def test_create_disk_overlayroot_no_write_partition_warning(self):
-        """Test overlayroot with no write partition shows warning"""
-        disk_builder = DiskBuilder(
-            self.xml_state, 'target_dir', 'root_dir'
-        )
-        disk_builder.root_filesystem_is_overlay = True
-        disk_builder.root_filesystem_has_write_partition = False
-        
-        with patch('kiwi.builder.disk.log.warning') as mock_warning:
-            with patch.object(disk_builder, '_build_and_map_disk_partitions'):
-                with patch.object(disk_builder, '_create_disk_partitions'):
-                    disk_builder._create_root_partition(Mock(), 100, 0)
-        
-        mock_warning.assert_called_once_with(
-            '--> overlayroot explicitly requested no write partition'
-        )

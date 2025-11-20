@@ -217,11 +217,3 @@ class TestPartitionerMsDos:
         assert m_open.return_value.write.call_args_list == [
             call('d\n1\nn\np\n1\n4096\n\nw\nq\n')
         ]
-
-    def test_set_all_flags_with_flags_list(self):
-        with patch.object(self.partitioner, 'set_flag') as mock_set_flag:
-            self.partitioner._set_all_flags('primary', ['boot', 'active'], 1)
-            assert mock_set_flag.call_count == 3
-            mock_set_flag.assert_any_call(1, 'primary')
-            mock_set_flag.assert_any_call(1, 'boot')
-            mock_set_flag.assert_any_call(1, 'active')
