@@ -1855,40 +1855,40 @@ class TestDiskBuilder:
             nonlocal ec2_layout_called
             ec2_layout_called = enabled
 
-        # Patch Partitioner.new to return our spy partitioner
-        with patch('kiwi.storage.disk.Partitioner.new') as mock_partitioner_new:
-            spy_partitioner = Mock()
-            spy_partitioner.create.side_effect = track_create
-            spy_partitioner.set_ec2_layout.side_effect = track_set_ec2_layout
-            spy_partitioner.set_start_sector = Mock()
-            mock_partitioner_new.return_value = spy_partitioner
+        # # Patch Partitioner.new to return our spy partitioner
+        # with patch('kiwi.storage.disk.Partitioner.new') as mock_partitioner_new:
+        #     spy_partitioner = Mock()
+        #     spy_partitioner.create.side_effect = track_create
+        #     spy_partitioner.set_ec2_layout.side_effect = track_set_ec2_layout
+        #     spy_partitioner.set_start_sector = Mock()
+        #     mock_partitioner_new.return_value = spy_partitioner
+        #
+        #     # Mock RuntimeConfig to avoid YAML parsing issues
+        #     mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
+        #     mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
 
-            # Mock RuntimeConfig to avoid YAML parsing issues
-            mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
-            mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
+        # Mock only external commands and file operations
+        with patch('kiwi.storage.disk.Command.run'):
+            with patch('kiwi.storage.device_provider.DeviceProvider'):
+                bootloader_config = Mock()
+                bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
+                mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+                mock_exists.return_value = True
 
-            # Mock only external commands and file operations
-            with patch('kiwi.storage.disk.Command.run'):
-                with patch('kiwi.storage.device_provider.DeviceProvider'):
-                    bootloader_config = Mock()
-                    bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
-                    mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
-                    mock_exists.return_value = True
+                description = XMLDescription('../../test/data/example_ec2_layout.xml')
+                disk_builder = DiskBuilder(
+                    XMLState(description.load()), 'target_dir', 'root_dir'
+                )
+                # ec2_layout should be True from XML, don't override it
 
-                    description = XMLDescription('../../test/data/example_ec2_layout.xml')
-                    disk_builder = DiskBuilder(
-                        XMLState(description.load()), 'target_dir', 'root_dir'
-                    )
-                    # ec2_layout should be True from XML, don't override it
+                with patch('builtins.open'):
+                    disk_builder.create_disk()
 
-                    with patch('builtins.open'):
-                        disk_builder.create_disk()
-
-                    # Verify EC2 layout was enabled
-                    assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
-                    
-                    # Explicitly verify root partition got ID 1
-                    assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
+                # Verify EC2 layout was enabled
+                assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+                
+                # Explicitly verify root partition got ID 1
+                assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
