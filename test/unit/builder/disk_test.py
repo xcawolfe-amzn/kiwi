@@ -1997,7 +1997,8 @@ class TestDiskBuilder:
         
         with patch('kiwi.builder.disk.log.warning') as mock_warning:
             with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
-                with patch.object(disk_builder.firmware, 'get_efi_partition_size', return_value=None):
+                # Mock efi_mode to False to skip EFI partition creation and avoid None arithmetic when calculating partition size
+                with patch.object(disk_builder.firmware, 'efi_mode', return_value=False):
                     with patch.object(disk_builder.firmware, 'get_prep_partition_size', return_value=None):
                         disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
         
