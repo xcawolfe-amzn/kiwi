@@ -1990,12 +1990,16 @@ class TestDiskBuilder:
         )
         disk_builder.root_filesystem_is_overlay = True
         disk_builder.root_filesystem_has_write_partition = False
+        disk_builder.ec2_layout = False  # Ensure we hit the non-EC2 path
+        
+        mock_disk = Mock()
+        mock_disk.wipe = Mock()
         
         with patch('kiwi.builder.disk.log.warning') as mock_warning:
-            # Mock the method that calls _create_root_partition
-            with patch.object(disk_builder, 'create_disk') as mock_create_disk:
-                # Directly call the method that contains the warning
-                disk_builder._create_root_partition(Mock(), 100, 0)
+            with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
+                with patch.object(disk_builder.firmware, 'get_efi_partition_size', return_value=None):
+                    with patch.object(disk_builder.firmware, 'get_prep_partition_size', return_value=None):
+                        disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
         
         mock_warning.assert_called_once_with(
             '--> overlayroot explicitly requested no write partition'
