@@ -1828,7 +1828,6 @@ class TestDiskBuilder:
         disk_subformat.create_image_format.assert_called_once_with()
 
     @patch('kiwi.storage.disk.RuntimeConfig')
-    @patch('kiwi.storage.disk.Disk')
     @patch('kiwi.builder.disk.RuntimeConfig')
     @patch('kiwi.builder.disk.create_boot_loader_config')
     @patch('kiwi.builder.disk.FileSystem.new')
@@ -1878,7 +1877,7 @@ class TestDiskBuilder:
                         # Force table_type to be 'gpt' from XML firmware="efi"
                         return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_layout)
                     
-                    with patch.object('kiwi.storage.disk.Disk', '__init__', mock_disk_init):
+                    with patch.object(Disk, '__init__', mock_disk_init):
                         bootloader_config = Mock()
                         bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
                         mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
