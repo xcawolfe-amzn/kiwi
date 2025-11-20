@@ -227,3 +227,13 @@ class TestPartitionerMsDos:
             mock_set_flag.assert_any_call(1, 'primary')
             mock_set_flag.assert_any_call(1, 'boot')
             mock_set_flag.assert_any_call(1, 'active')
+
+    def test_set_all_flags_without_partition_id(self):
+        """Test _set_all_flags without partition_id to cover line 257"""
+        self.partitioner.partition_id = 2  # Set a partition ID
+        with patch.object(self.partitioner, 'set_flag') as mock_set_flag:
+            # Call without partition_id parameter to trigger the None check
+            self.partitioner._set_all_flags('primary', ['boot'])
+            # Should use self.partition_id (2) since partition_id was None
+            mock_set_flag.assert_any_call(2, 'primary')
+            mock_set_flag.assert_any_call(2, 'boot')
