@@ -1911,7 +1911,7 @@ class TestDiskBuilder:
                     if result_disk:
                         partition_map = result_disk.get_public_partition_id_map()
                         root_partition_id = partition_map.get('kiwi_RootPart')
-                        assert root_partition_id == '1', f"Root partition should get ID '1', got {root_partition_id}"
+                        assert root_partition_id == 1, f"Root partition should get ID '1', got {root_partition_id}"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
