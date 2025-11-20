@@ -1855,12 +1855,21 @@ class TestDiskBuilder:
         # Track if set_ec2_layout was called by patching the method
         ec2_layout_called = False
         original_set_ec2_layout = None
+        partition_creation_order = []
         
         def track_set_ec2_layout(self, enabled):
             nonlocal ec2_layout_called
             ec2_layout_called = enabled
             # Call the real method to preserve functionality
             original_set_ec2_layout(self, enabled)
+
+        def track_partition_creation(original_create):
+            def wrapper(self, name, mbsize, type_name, flags=None):
+                nonlocal partition_creation_order
+                result = original_create(self, name, mbsize, type_name, flags)
+                partition_creation_order.append(name)
+                return result
+            return wrapper
 
         # Let real partitioner run, only mock external commands
         with patch('kiwi.command.Command.run'):
@@ -1869,6 +1878,11 @@ class TestDiskBuilder:
                 from kiwi.partitioner.base import PartitionerBase
                 original_set_ec2_layout = PartitionerBase.set_ec2_layout
                 PartitionerBase.set_ec2_layout = track_set_ec2_layout
+
+                # Track partition creation order
+                from kiwi.partitioner.gpt import PartitionerGpt
+                original_gpt_create = PartitionerGpt.create
+                PartitionerGpt.create = track_partition_creation(original_gpt_create)
 
                 # Mock RuntimeConfig to avoid YAML parsing issues
                 mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
@@ -1907,11 +1921,17 @@ class TestDiskBuilder:
                     # Verify EC2 layout was enabled
                     assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
                     
+                    # Verify root partition was created last (EC2 layout requirement)
+                    root_partitions = [name for name in partition_creation_order if 'root' in name.lower()]
+                    if root_partitions:
+                        last_root = root_partitions[-1]
+                        assert partition_creation_order[-1] == last_root, f"Root partition should be created last, but creation order was: {partition_creation_order}"
+                    
                     # Verify root partition got ID 1 by checking the partition ID map
                     if result_disk:
                         partition_map = result_disk.get_public_partition_id_map()
                         root_partition_id = partition_map.get('kiwi_RootPart')
-                        assert root_partition_id == 1, f"Root partition should get ID '1', got {root_partition_id}"
+                        assert root_partition_id == '1', f"Root partition should get ID '1', got {root_partition_id}"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
