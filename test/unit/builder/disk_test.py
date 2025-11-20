@@ -1873,44 +1873,45 @@ class TestDiskBuilder:
                 # Mock RuntimeConfig to avoid YAML parsing issues
                 mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
                 mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
-                    # Let firmware determine table_type naturally, then inject it into Disk
-                    original_disk_init = Disk.__init__
-                    def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_layout=False):
-                        # Force table_type to be 'gpt' from XML firmware="efi"
-                        return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_layout)
-                    
-                    with patch.object(Disk, '__init__', mock_disk_init):
-                        bootloader_config = Mock()
-                        bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
-                        mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
-                        mock_exists.return_value = True
 
-                        description = XMLDescription('../../test/data/example_ec2_layout.xml')
-                        disk_builder = DiskBuilder(
-                            XMLState(description.load()), 'target_dir', 'root_dir'
-                        )
-                        # ec2_layout should be True from XML, don't override it
+                # Let firmware determine table_type naturally, then inject it into Disk
+                original_disk_init = Disk.__init__
+                def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_layout=False):
+                    # Force table_type to be 'gpt' from XML firmware="efi"
+                    return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_layout)
+                
+                with patch.object(Disk, '__init__', mock_disk_init):
+                    bootloader_config = Mock()
+                    bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
+                    mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+                    mock_exists.return_value = True
 
-                        with patch('builtins.open'):
-                            result_disk = None
-                            # Capture the disk instance to check partition mapping
-                            original_disk_enter = Disk.__enter__
-                            def capture_disk(self):
-                                nonlocal result_disk
-                                result_disk = self
-                                return original_disk_enter(self)
-                            
-                            with patch.object(Disk, '__enter__', capture_disk):
-                                disk_builder.create_disk()
+                    description = XMLDescription('../../test/data/example_ec2_layout.xml')
+                    disk_builder = DiskBuilder(
+                        XMLState(description.load()), 'target_dir', 'root_dir'
+                    )
+                    # ec2_layout should be True from XML, don't override it
 
-                        # Verify EC2 layout was enabled
-                        assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+                    with patch('builtins.open'):
+                        result_disk = None
+                        # Capture the disk instance to check partition mapping
+                        original_disk_enter = Disk.__enter__
+                        def capture_disk(self):
+                            nonlocal result_disk
+                            result_disk = self
+                            return original_disk_enter(self)
                         
-                        # Verify root partition got ID 1 by checking the partition ID map
-                        if result_disk:
-                            partition_map = result_disk.get_public_partition_id_map()
-                            root_partition_id = partition_map.get('kiwi_RootPart')
-                            assert root_partition_id == '1', f"Root partition should get ID '1', got {root_partition_id}"
+                        with patch.object(Disk, '__enter__', capture_disk):
+                            disk_builder.create_disk()
+
+                    # Verify EC2 layout was enabled
+                    assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+                    
+                    # Verify root partition got ID 1 by checking the partition ID map
+                    if result_disk:
+                        partition_map = result_disk.get_public_partition_id_map()
+                        root_partition_id = partition_map.get('kiwi_RootPart')
+                        assert root_partition_id == '1', f"Root partition should get ID '1', got {root_partition_id}"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
