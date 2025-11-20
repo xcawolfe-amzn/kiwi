@@ -65,7 +65,6 @@ def main():
     """
     docopt.__dict__['extras'] = extras
     try:
-        breakpoint()
         App()
     except KiwiError as e:
         # known exception, log information and exit
