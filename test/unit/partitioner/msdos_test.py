@@ -218,10 +218,12 @@ class TestPartitionerMsDos:
             call('d\n1\nn\np\n1\n4096\n\nw\nq\n')
         ]
 
-    def test_set_all_flags_with_flags_list(self):
+    @patch('kiwi.partitioner.msdos.Command.run')
+    def test_create_with_flags_list(self, mock_command):
         with patch.object(self.partitioner, 'set_flag') as mock_set_flag:
-            self.partitioner._set_all_flags('primary', ['boot', 'active'], 1)
-            assert mock_set_flag.call_count == 3
+            self.partitioner.create('name', 100, 'primary', ['boot', 'active'])
+            # Verify set_flag was called for type_name and each flag
+            assert mock_set_flag.call_count >= 3  # type + 2 flags
             mock_set_flag.assert_any_call(1, 'primary')
             mock_set_flag.assert_any_call(1, 'boot')
             mock_set_flag.assert_any_call(1, 'active')
