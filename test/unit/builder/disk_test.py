@@ -1863,20 +1863,16 @@ class TestDiskBuilder:
             original_set_ec2_layout(self, enabled)
 
         # Let real partitioner run, only mock external commands
-        with patch('kiwi.partitioner.base.Command.run'):
-            with patch('kiwi.partitioner.gpt.Command.run'):
+        with patch('kiwi.command.Command.run'):
+            with patch('kiwi.storage.device_provider.DeviceProvider'):
                 # Patch set_ec2_layout to track calls while preserving real behavior
                 from kiwi.partitioner.base import Partitioner as BasePartitioner
                 original_set_ec2_layout = BasePartitioner.set_ec2_layout
                 BasePartitioner.set_ec2_layout = track_set_ec2_layout
 
-            # Mock RuntimeConfig to avoid YAML parsing issues
-            mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
-            mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
-
-            # Mock only external commands and file operations
-            with patch('kiwi.storage.disk.Command.run'):
-                with patch('kiwi.storage.device_provider.DeviceProvider'):
+                # Mock RuntimeConfig to avoid YAML parsing issues
+                mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
+                mock_builder_runtime_config.return_value = Mock()  # DiskBuilder just needs an instance
                     # Let firmware determine table_type naturally, then inject it into Disk
                     original_disk_init = Disk.__init__
                     def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_layout=False):
