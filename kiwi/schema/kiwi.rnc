@@ -1633,24 +1633,24 @@ div {
         ## - Cannot be used with spare_part_is_last (mutually exclusive)
         attribute ec2_part_layout { xsd:boolean }
         >> sch:pattern [ id = "ec2_part_layout" is-a = "image_type"
-            sch:param [ name = "attr" value = "ec2_layout" ]
+            sch:param [ name = "attr" value = "ec2_part_layout" ]
             sch:param [ name = "types" value = "oem" ]
         ]
-        >> sch:pattern [ id = "ec2_layout_no_oem_resize"
+        >> sch:pattern [ id = "ec2_part_layout_no_oem_resize"
             sch:rule [
-                context = "type[@ec2_layout='true' and @oem_resize='true']"
+                context = "type[@ec2_part_layout='true' and @oem_resize='true']"
                 sch:assert [
                     test = "false()"
-                    "ec2_layout cannot be used with oem_resize: they are mutually exclusive"
+                    "ec2_part_layout cannot be used with oem_resize: they are mutually exclusive"
                 ]
             ]
         ]
-        >> sch:pattern [ id = "ec2_layout_no_spare_part_is_last"
+        >> sch:pattern [ id = "ec2_part_layout_no_spare_part_is_last"
             sch:rule [
-                context = "type[@ec2_layout='true' and @spare_part_is_last='true']"
+                context = "type[@ec2_part_layout='true' and @spare_part_is_last='true']"
                 sch:assert [
                     test = "false()"
-                    "ec2_layout cannot be used with spare_part_is_last: they are mutually exclusive"
+                    "ec2_part_layout cannot be used with spare_part_is_last: they are mutually exclusive"
                 ]
             ]
         ]
@@ -2446,7 +2446,7 @@ div {
         k.type.spare_part_fs.attribute? &
         k.type.spare_part_fs_attributes.attribute? &
         k.type.spare_part_is_last.attribute? &
-        k.type.ec2_layout.attribute? &
+        k.type.ec2_part_layout.attribute? &
         k.type.target_blocksize.attribute? &
         k.type.target_removable.attribute? &
         k.type.selinux_policy.attribute? &

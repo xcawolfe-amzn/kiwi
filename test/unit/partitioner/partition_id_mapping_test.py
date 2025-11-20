@@ -23,7 +23,7 @@ class TestPartitionIDMapping(unittest.TestCase):
     def test_gpt_partition_id_mapping(self, mock_command):
         """Test GPT partitioner returns correct partition IDs"""
         partitioner = PartitionerGpt(MockDeviceProvider())
-        partitioner.set_ec2_layout(True)
+        partitioner.set_ec2_part_layout(True)
         
         # Test non-root partition gets ID 2 (skips reserved ID 1)
         efi_id = partitioner.create('p.UEFI', 100, 't.efi')
@@ -37,7 +37,7 @@ class TestPartitionIDMapping(unittest.TestCase):
     def test_msdos_partition_id_mapping(self, mock_command):
         """Test MSDOS partitioner returns correct partition IDs"""
         partitioner = PartitionerMsDos(MockDeviceProvider())
-        partitioner.set_ec2_layout(True)
+        partitioner.set_ec2_part_layout(True)
         
         # Test non-root partition gets ID 2
         boot_id = partitioner.create('p.lxboot', 500, 't.linux')
@@ -51,7 +51,7 @@ class TestPartitionIDMapping(unittest.TestCase):
     def test_dasd_partition_id_mapping(self, mock_command):
         """Test DASD partitioner returns correct partition IDs"""
         partitioner = PartitionerDasd(MockDeviceProvider())
-        partitioner.set_ec2_layout(True)
+        partitioner.set_ec2_part_layout(True)
         
         # Test non-root partition gets ID 2
         spare_id = partitioner.create('p.spare', 1000, 't.linux')
@@ -76,7 +76,7 @@ class TestPartitionIDMapping(unittest.TestCase):
     def test_ec2_layout_multiple_partitions(self):
         """Test EC2 layout with multiple partitions"""
         partitioner = PartitionerGpt(MockDeviceProvider())
-        partitioner.set_ec2_layout(True)
+        partitioner.set_ec2_part_layout(True)
         
         with patch('kiwi.partitioner.gpt.Command.run'):
             # Create multiple partitions before root

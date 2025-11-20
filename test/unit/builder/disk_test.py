@@ -1840,7 +1840,7 @@ class TestDiskBuilder:
     ):
         """Test EC2 layout explicitly assigns partition ID 1 to root partition"""
         
-        # Track partition IDs and set_ec2_layout calls
+        # Track partition IDs and set_ec2_part_layout calls
         root_partition_id = None
         ec2_layout_called = False
         
@@ -1852,16 +1852,16 @@ class TestDiskBuilder:
             else:  # Other partitions
                 return 2
 
-        # Track if set_ec2_layout was called by patching the method
+        # Track if set_ec2_part_layout was called by patching the method
         ec2_layout_called = False
-        original_set_ec2_layout = None
+        original_set_ec2_part_layout = None
         partition_creation_order = []
         
-        def track_set_ec2_layout(self, enabled):
+        def track_set_ec2_part_layout(self, enabled):
             nonlocal ec2_layout_called
             ec2_layout_called = enabled
             # Call the real method to preserve functionality
-            original_set_ec2_layout(self, enabled)
+            original_set_ec2_part_layout(self, enabled)
 
         def track_partition_creation(original_create):
             def wrapper(self, name, mbsize, type_name, flags=None):
@@ -1874,10 +1874,10 @@ class TestDiskBuilder:
         # Let real partitioner run, only mock external commands
         with patch('kiwi.command.Command.run'):
             with patch('kiwi.storage.device_provider.DeviceProvider'):
-                # Patch set_ec2_layout to track calls while preserving real behavior
+                # Patch set_ec2_part_layout to track calls while preserving real behavior
                 from kiwi.partitioner.base import PartitionerBase
-                original_set_ec2_layout = PartitionerBase.set_ec2_layout
-                PartitionerBase.set_ec2_layout = track_set_ec2_layout
+                original_set_ec2_part_layout = PartitionerBase.set_ec2_part_layout
+                PartitionerBase.set_ec2_part_layout = track_set_ec2_part_layout
 
                 # Track partition creation order
                 from kiwi.partitioner.gpt import PartitionerGpt
@@ -1919,7 +1919,7 @@ class TestDiskBuilder:
                             disk_builder.create_disk()
 
                     # Verify EC2 layout was enabled
-                    assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+                    assert ec2_layout_called == True, "set_ec2_part_layout should have been called with True"
                     
                     # Verify root partition was created last (EC2 layout requirement)
                     root_partitions = [name for name in partition_creation_order if 'root' in name.lower()]

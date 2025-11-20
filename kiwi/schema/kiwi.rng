@@ -2408,8 +2408,8 @@ the partition table.</a:documentation>
         <sch:param name="types" value="oem"/>
       </sch:pattern>
     </define>
-    <define name="k.type.ec2_layout.attribute">
-      <attribute name="ec2_layout">
+    <define name="k.type.ec2_part_layout.attribute">
+      <attribute name="ec2_part_layout">
         <a:documentation>Specify if the disk layout should follow EC2 conventions:
 - Root partition is created last but numbered as partition 1
 - Root filesystem can expand to fill remaining disk space
@@ -2417,18 +2417,18 @@ the partition table.</a:documentation>
 - Cannot be used with spare_part_is_last (mutually exclusive)</a:documentation>
         <data type="boolean"/>
       </attribute>
-      <sch:pattern id="ec2_layout" is-a="image_type">
-        <sch:param name="attr" value="ec2_layout"/>
+      <sch:pattern id="ec2_part_layout" is-a="image_type">
+        <sch:param name="attr" value="ec2_part_layout"/>
         <sch:param name="types" value="oem"/>
       </sch:pattern>
-      <sch:pattern id="ec2_layout_no_oem_resize">
-        <sch:rule context="type[@ec2_layout='true' and @oem_resize='true']">
-          <sch:assert test="false()">ec2_layout cannot be used with oem_resize: they are mutually exclusive</sch:assert>
+      <sch:pattern id="ec2_part_layout_no_oem_resize">
+        <sch:rule context="type[@ec2_part_layout='true' and @oem_resize='true']">
+          <sch:assert test="false()">ec2_part_layout cannot be used with oem_resize: they are mutually exclusive</sch:assert>
         </sch:rule>
       </sch:pattern>
-      <sch:pattern id="ec2_layout_no_spare_part_is_last">
-        <sch:rule context="type[@ec2_layout='true' and @spare_part_is_last='true']">
-          <sch:assert test="false()">ec2_layout cannot be used with spare_part_is_last: they are mutually exclusive</sch:assert>
+      <sch:pattern id="ec2_part_layout_no_spare_part_is_last">
+        <sch:rule context="type[@ec2_part_layout='true' and @spare_part_is_last='true']">
+          <sch:assert test="false()">ec2_part_layout cannot be used with spare_part_is_last: they are mutually exclusive</sch:assert>
         </sch:rule>
       </sch:pattern>
     </define>
@@ -3627,7 +3627,7 @@ kiwi-ng result bundle ...</a:documentation>
           <ref name="k.type.spare_part_is_last.attribute"/>
         </optional>
         <optional>
-          <ref name="k.type.ec2_layout.attribute"/>
+          <ref name="k.type.ec2_part_layout.attribute"/>
         </optional>
         <optional>
           <ref name="k.type.target_blocksize.attribute"/>
