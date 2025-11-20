@@ -1983,31 +1983,51 @@ class TestDiskBuilder:
         disk.partitioner = partitioner
         return disk
 
-    def test_create_disk_overlayroot_no_write_partition_warning(self):
+    @patch('kiwi.storage.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.RuntimeConfig')
+    @patch('kiwi.builder.disk.create_boot_loader_config')
+    @patch('kiwi.builder.disk.FileSystem.new')
+    @patch('kiwi.builder.disk.Command.run')
+    @patch('kiwi.builder.disk.Defaults.get_grub_boot_directory_name')
+    @patch('os.path.exists')
+    def test_create_disk_overlayroot_no_write_partition_warning(
+        self, mock_exists, mock_grub_dir, mock_command, mock_fs,
+        mock_create_boot_loader_config, mock_builder_runtime_config, mock_storage_runtime_config
+    ):
         """Test overlayroot with no write partition shows warning"""
-        disk_builder = DiskBuilder(
-            self.xml_state, 'target_dir', 'root_dir'
-        )
-        disk_builder.root_filesystem_is_overlay = True
-        disk_builder.root_filesystem_has_write_partition = False
-        disk_builder.ec2_layout = False  # Ensure we hit the non-EC2 path
         
-        mock_disk = Mock()
-        mock_disk.wipe = Mock()
-        
-        with patch('kiwi.builder.disk.log.warning') as mock_warning:
-            # Mock firmware to skip all partition creation and reach overlayroot logic
-            firmware_patches = {
-                'get_legacy_bios_partition_size': Mock(return_value=None),
-                'efi_mode': Mock(return_value=False),
-                'ofw_mode': Mock(return_value=False)
-            }
-            with patch.multiple(disk_builder.firmware, **firmware_patches):
-                # Mock XML state methods to skip boot and spare partitions
-                with patch.object(disk_builder.xml_state, 'get_build_type_bootpartition_size', return_value=0, create=True):
-                    with patch.object(disk_builder.xml_state, 'get_build_type_spare_part_size', return_value=0, create=True):
-                        disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
-        
-        mock_warning.assert_called_once_with(
-            '--> overlayroot explicitly requested no write partition'
-        )
+        # Let real partitioner run, only mock external commands
+        with patch('kiwi.command.Command.run'):
+            with patch('kiwi.storage.device_provider.DeviceProvider'):
+                # Mock RuntimeConfig to avoid YAML parsing issues
+                mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
+                mock_builder_runtime_config.return_value = Mock()
+
+                # Let firmware determine table_type naturally, then inject it into Disk
+                original_disk_init = Disk.__init__
+                def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_layout=False):
+                    # Force table_type to be 'gpt' from XML firmware="efi"
+                    return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_layout)
+                
+                with patch.object(Disk, '__init__', mock_disk_init):
+                    bootloader_config = Mock()
+                    bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
+                    mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+                    mock_exists.return_value = True
+
+                    description = XMLDescription('../../test/data/example_ec2_layout.xml')
+                    disk_builder = DiskBuilder(
+                        XMLState(description.load()), 'target_dir', 'root_dir'
+                    )
+                    # Set overlayroot conditions
+                    disk_builder.root_filesystem_is_overlay = True
+                    disk_builder.root_filesystem_has_write_partition = False
+                    disk_builder.ec2_layout = False  # Ensure we hit the non-EC2 path
+
+                    with patch('kiwi.builder.disk.log.warning') as mock_warning:
+                        with patch('builtins.open'):
+                            disk_builder.create_disk()
+
+                    mock_warning.assert_called_with(
+                        '--> overlayroot explicitly requested no write partition'
+                    )
