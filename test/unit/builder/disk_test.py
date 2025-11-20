@@ -1866,9 +1866,9 @@ class TestDiskBuilder:
         with patch('kiwi.command.Command.run'):
             with patch('kiwi.storage.device_provider.DeviceProvider'):
                 # Patch set_ec2_layout to track calls while preserving real behavior
-                from kiwi.partitioner.base import Partitioner as BasePartitioner
-                original_set_ec2_layout = BasePartitioner.set_ec2_layout
-                BasePartitioner.set_ec2_layout = track_set_ec2_layout
+                from kiwi.partitioner.base import PartitionerBase
+                original_set_ec2_layout = PartitionerBase.set_ec2_layout
+                PartitionerBase.set_ec2_layout = track_set_ec2_layout
 
                 # Mock RuntimeConfig to avoid YAML parsing issues
                 mock_storage_runtime_config.return_value.get_mapper_tool.return_value = 'partx'
