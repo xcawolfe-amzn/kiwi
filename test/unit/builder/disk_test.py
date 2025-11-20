@@ -2016,3 +2016,41 @@ class TestDiskBuilder:
         mock_warning.assert_any_call(
             '--> overlayroot explicitly requested no write partition'
         )
+
+    def test_ec2_layout_lvm_root_partition(self):
+        """Test EC2 layout with LVM root partition creation"""
+        disk_builder = DiskBuilder(self.xml_state, 'target_dir', 'root_dir')
+        disk_builder.volume_manager_name = 'lvm'
+        disk_builder.ec2_layout = True
+        disk_builder.root_filesystem_is_overlay = False
+        
+        mock_disk = Mock()
+        mock_disk.wipe = Mock()
+        mock_disk.get_device.return_value = {'root': '/dev/loop0p1'}
+        mock_disk.create_root_lvm_partition = Mock()
+        
+        with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
+            with patch.object(disk_builder.firmware, 'efi_mode', return_value=False):
+                with patch.object(disk_builder.firmware, 'ofw_mode', return_value=False):
+                    disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
+        
+        mock_disk.create_root_lvm_partition.assert_called_once()
+
+    def test_ec2_layout_mdraid_root_partition(self):
+        """Test EC2 layout with mdraid root partition creation"""
+        disk_builder = DiskBuilder(self.xml_state, 'target_dir', 'root_dir')
+        disk_builder.mdraid = True
+        disk_builder.ec2_layout = True
+        disk_builder.root_filesystem_is_overlay = False
+        
+        mock_disk = Mock()
+        mock_disk.wipe = Mock()
+        mock_disk.get_device.return_value = {'root': '/dev/loop0p1'}
+        mock_disk.create_root_raid_partition = Mock()
+        
+        with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
+            with patch.object(disk_builder.firmware, 'efi_mode', return_value=False):
+                with patch.object(disk_builder.firmware, 'ofw_mode', return_value=False):
+                    disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
+        
+        mock_disk.create_root_raid_partition.assert_called_once()
