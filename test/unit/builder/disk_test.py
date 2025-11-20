@@ -2004,6 +2004,7 @@ class TestDiskBuilder:
         
         mock_disk = Mock()
         mock_disk.wipe = Mock()
+        mock_disk.get_device.return_value = {'root': '/dev/loop0p1', 'readonly': '/dev/loop0p2'}
         
         # Mock all firmware methods to skip partition creation and reach overlayroot logic
         with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
