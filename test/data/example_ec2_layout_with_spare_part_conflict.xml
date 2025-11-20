@@ -5,7 +5,7 @@
         <author>Test Author</author>
         <contact>test@example.com</contact>
         <specification>
-            Test image for EC2 layout conflict: ec2_layout="true" with spare_part_is_last="true"
+            Test image for EC2 partition layout conflict: ec2_part_layout="true" with spare_part_is_last="true"
         </specification>
     </description>
     <preferences>
@@ -18,7 +18,7 @@
         <rpm-check-signatures>false</rpm-check-signatures>
         <bootsplash-theme>openSUSE</bootsplash-theme>
         <bootloader-theme>openSUSE</bootloader-theme>
-        <type image="oem" filesystem="btrfs" initrd_system="kiwi" boot="oemboot/example-distribution" installiso="true" kernelcmdline="splash" firmware="efi" ec2_layout="true" spare_part_is_last="true">
+        <type image="oem" filesystem="btrfs" initrd_system="kiwi" boot="oemboot/example-distribution" installiso="true" kernelcmdline="splash" firmware="efi" ec2_part_layout="true" spare_part_is_last="true">
             <oemconfig>
                 <oem-multipath-scan>false</oem-multipath-scan>
                 <oem-swap>true</oem-swap>
