@@ -96,6 +96,7 @@ class PartitionerBase:
             # For EC2 root partition, use ID 1 but track the highest ID used
             if self.partition_id == 0:
                 self.partition_id = 1
+            self.partition_id = 1  # Always set current ID to 1 for root
             return 1
         elif self.ec2_layout:
             self.partition_id += 1
