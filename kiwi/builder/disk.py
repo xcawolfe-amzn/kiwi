@@ -125,7 +125,7 @@ class DiskBuilder:
         self.spare_part_mountpoint = \
             xml_state.build_type.get_spare_part_mountpoint()
 
-        self.ec2_layout = xml_state.get_ec2_layout()
+        self.ec2_part_layout = xml_state.get_ec2_part_layout()
         self.persistency_type = xml_state.build_type.get_devicepersistency()
         self.root_filesystem_is_overlay = xml_state.build_type.get_overlayroot()
         self.root_filesystem_read_only_type = \
@@ -1290,8 +1290,8 @@ class DiskBuilder:
                 )
             )
 
-        # Defer root partition creation if EC2 layout is enabled
-        if not self.ec2_layout:
+        # Defer root partition creation if EC2 partition layout is enabled
+        if not self.ec2_part_layout:
             if self.root_filesystem_is_overlay and \
                self.root_filesystem_has_write_partition is False:
                 log.warning(
@@ -1337,10 +1337,10 @@ class DiskBuilder:
                 'all_free'
             )
 
-        # Create root partition last if EC2 layout is enabled
-        if self.ec2_layout:
+        # Create root partition last if EC2 partition layout is enabled
+        if self.ec2_part_layout:
             log.info(
-                '--> creating root partition [EC2 layout, created last for expansion]'
+                '--> creating root partition [EC2 partition layout, created last for expansion]'
             )
             if self.root_filesystem_is_overlay and \
                self.root_filesystem_has_write_partition is False:

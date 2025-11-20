@@ -57,7 +57,7 @@ class Disk(DeviceProvider):
     def __init__(
         self, table_type: str, storage_provider: DeviceProvider,
         start_sector: int = None, extended_layout: bool = False,
-        ec2_layout: bool = False
+        ec2_part_layout: bool = False
     ):
         """
         Construct a new Disk layout object
@@ -106,7 +106,7 @@ class Disk(DeviceProvider):
         self.partitioner = Partitioner.new(
             table_type, storage_provider, start_sector, extended_layout
         )
-        self.partitioner.set_ec2_layout(ec2_layout)
+        self.partitioner.set_ec2_part_layout(ec2_part_layout)
 
         self.table_type = table_type
 

@@ -2000,7 +2000,7 @@ class TestDiskBuilder:
         )
         disk_builder.root_filesystem_is_overlay = True
         disk_builder.root_filesystem_has_write_partition = False
-        disk_builder.ec2_layout = True  # Use EC2 layout to hit the right code path
+        disk_builder.ec2_part_layout = True  # Use EC2 partition layout to hit the right code path
         
         mock_disk = Mock()
         mock_disk.wipe = Mock()
@@ -2021,7 +2021,7 @@ class TestDiskBuilder:
         """Test EC2 layout with LVM root partition creation"""
         disk_builder = DiskBuilder(self.xml_state, 'target_dir', 'root_dir')
         disk_builder.volume_manager_name = 'lvm'
-        disk_builder.ec2_layout = True
+        disk_builder.ec2_part_layout = True
         disk_builder.root_filesystem_is_overlay = False
         
         mock_disk = Mock()
@@ -2040,7 +2040,7 @@ class TestDiskBuilder:
         """Test EC2 layout with mdraid root partition creation"""
         disk_builder = DiskBuilder(self.xml_state, 'target_dir', 'root_dir')
         disk_builder.mdraid = True
-        disk_builder.ec2_layout = True
+        disk_builder.ec2_part_layout = True
         disk_builder.root_filesystem_is_overlay = False
         
         mock_disk = Mock()

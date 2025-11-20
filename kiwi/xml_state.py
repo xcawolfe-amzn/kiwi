@@ -1605,23 +1605,23 @@ class XMLState:
             return spare_part_attributes.strip().split(',')
         return None
 
-    def get_ec2_layout(self) -> bool:
+    def get_ec2_part_layout(self) -> bool:
         """
-        EC2 layout mode for disk image.
+        EC2 partition layout mode for disk image.
 
-        When enabled (when ec2_layout="true" is set on the type element):
+        When enabled (when ec2_part_layout="true" is set on the type element):
         - Root partition is created last but numbered as partition 1
         - Root filesystem can expand to fill remaining disk space
         - Requires oem_resize to be disabled (mutually exclusive)
         - Cannot be used with spare_part_is_last (mutually exclusive)
 
-        :return: ec2_layout setting or False if not set
+        :return: ec2_part_layout setting or False if not set
 
         :rtype: bool
         """
         try:
-            ec2_layout_value = self.build_type.get_ec2_layout()
-            return True if ec2_layout_value else False
+            ec2_part_layout_value = self.build_type.get_ec2_part_layout()
+            return True if ec2_part_layout_value else False
         except AttributeError:
             # Attribute doesn't exist in older XML files
             return False
