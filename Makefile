@@ -4,7 +4,6 @@ python_version = 3
 python_lookup_name = python$(python_version)
 python = $(shell which $(python_lookup_name))
 sc_disable = SC1091,SC1090,SC2001,SC2174,SC1117,SC2048,SC2004
-TRANG := docker run --rm -v $(shell pwd):/work openjdk:11 java -jar /work/trang-20220510.jar
 
 LC = LC_MESSAGES
 
@@ -49,12 +48,15 @@ kiwi/schema/kiwi.rng: kiwi/schema/kiwi.rnc
 	# whenever the schema is changed this target will convert
 	# the short form of the RelaxNG schema to the format used
 	# in code and auto generates the python data structures
-	@if [ ! -f trang-20220510.jar ]; then \
-	        wget -q https://github.com/relaxng/jing-trang/releases/download/V20220510/trang-20220510.zip && \
-	        unzip -qo trang-20220510.zip && \
-	        rm trang-20220510.zip; \
-	fi
-	java -jar trang-20220510/trang.jar -I rnc -O rng kiwi/schema/kiwi.rnc kiwi/schema/kiwi.rng
+	@if ! command -v trang >/dev/null 2>&1; then \
+		if [ ! -f trang-20220510.jar ]; then \
+			wget -q https://github.com/relaxng/jing-trang/releases/download/V20220510/trang-20220510.zip && \
+			unzip -qo trang-20220510.zip && \
+			rm trang-20220510.zip; \
+		fi; \
+		alias trang='java -jar trang-20220510/trang.jar'; \
+	fi; \
+	trang -I rnc -O rng kiwi/schema/kiwi.rnc kiwi/schema/kiwi.rng
 	# XML parser code is auto generated from schema using generateDS
 	# http://pythonhosted.org/generateDS
 	# ---
@@ -63,17 +65,15 @@ kiwi/schema/kiwi.rng: kiwi/schema/kiwi.rnc
 	#    expression which is different and wrong compared to the
 	#    expression in the schema
 	cat kiwi/schema/kiwi.rnc | sed -e \
-	        s'@arch-name = xsd:token.*@arch-name = xsd:token {pattern = ".*"}@' >\
-	        kiwi/schema/kiwi_modified_for_generateDS.rnc
+		s'@arch-name = xsd:token.*@arch-name = xsd:token {pattern = ".*"}@' >\
+		kiwi/schema/kiwi_modified_for_generateDS.rnc
 	# convert schema rnc format into xsd format and call generateDS
-	java -jar trang-20220510/trang.jar-I rnc -O xsd /work/kiwi/schema/kiwi_modified_for_generateDS.rnc \
-	        /work/kiwi/schema/kiwi_for_generateDS.xsd
+	trang -I rnc -O xsd kiwi/schema/kiwi_modified_for_generateDS.rnc \
+		kiwi/schema/kiwi_for_generateDS.xsd
 	generateDS.py -f --external-encoding='utf-8' --no-dates --no-warnings \
-	        -o kiwi/xml_parse.py kiwi/schema/kiwi_for_generateDS.xsd
+		-o kiwi/xml_parse.py kiwi/schema/kiwi_for_generateDS.xsd
 	rm kiwi/schema/kiwi_for_generateDS.xsd
 	rm kiwi/schema/kiwi_modified_for_generateDS.rnc
-
-
 
 obs_test_status:
 	./.obs_test_status
@@ -133,7 +133,7 @@ test: setup
 	# python static code checks
 	poetry run mypy kiwi
 	# unit tests
-	poetry run bash -c 'pushd test/unit && pytest -n 20 \
+	poetry run bash -c 'pushd test/unit && pytest -n 5 \
 		--doctest-modules --no-cov-on-fail --cov=kiwi \
 		--cov-report=term-missing --cov-fail-under=100 \
 		--cov-config .coveragerc'
@@ -167,10 +167,6 @@ prepare_for_pypi: clean setup
 	# sdist tarball, the actual publishing happens via the
 	# ci-publish-to-pypi.yml github action
 	poetry build --format=sdist
-
-debug:
-	PYTHONBREAKPOINT="pudb.set_trace" poetry run kiwi-ng --debug system build --description ../base-ami-ec2-layout/ --target-dir tmp-test
-
 
 clean: clean_git_attributes
 	rm -rf dist
