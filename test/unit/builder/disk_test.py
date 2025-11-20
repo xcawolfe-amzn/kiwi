@@ -2022,7 +2022,7 @@ class TestDiskBuilder:
                     # Set overlayroot conditions
                     disk_builder.root_filesystem_is_overlay = True
                     disk_builder.root_filesystem_has_write_partition = False
-                    disk_builder.ec2_layout = False  # Ensure we hit the non-EC2 path
+                    # Keep ec2_layout = True (from XML) to hit the EC2 code path with the warning
 
                     with patch('kiwi.builder.disk.log.warning') as mock_warning:
                         with patch('builtins.open'):
