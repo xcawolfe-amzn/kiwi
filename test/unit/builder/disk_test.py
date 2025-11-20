@@ -1996,11 +1996,13 @@ class TestDiskBuilder:
         mock_disk.wipe = Mock()
         
         with patch('kiwi.builder.disk.log.warning') as mock_warning:
+            # Mock all firmware modes to False to skip partition creation and reach overlayroot logic
             with patch.object(disk_builder.firmware, 'get_legacy_bios_partition_size', return_value=None):
-                # Mock efi_mode to False to skip EFI partition creation and avoid None arithmetic when calculating partition size
                 with patch.object(disk_builder.firmware, 'efi_mode', return_value=False):
-                    with patch.object(disk_builder.firmware, 'get_prep_partition_size', return_value=None):
-                        disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
+                    with patch.object(disk_builder.firmware, 'ofw_mode', return_value=False):
+                        with patch.object(disk_builder.xml_state, 'get_build_type_bootpartition_size', return_value=0):
+                            with patch.object(disk_builder.xml_state, 'get_build_type_spare_part_size', return_value=0):
+                                disk_builder._build_and_map_disk_partitions(mock_disk, 1000)
         
         mock_warning.assert_called_once_with(
             '--> overlayroot explicitly requested no write partition'
