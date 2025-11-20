@@ -1870,25 +1870,32 @@ class TestDiskBuilder:
             # Mock only external commands and file operations
             with patch('kiwi.storage.disk.Command.run'):
                 with patch('kiwi.storage.device_provider.DeviceProvider'):
-                    bootloader_config = Mock()
-                    bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
-                    mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
-                    mock_exists.return_value = True
-
-                    description = XMLDescription('../../test/data/example_ec2_layout.xml')
-                    disk_builder = DiskBuilder(
-                        XMLState(description.load()), 'target_dir', 'root_dir'
-                    )
-                    # ec2_layout should be True from XML, don't override it
-
-                    with patch('builtins.open'):
-                        disk_builder.create_disk()
-
-                    # Verify EC2 layout was enabled
-                    assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+                    # Let firmware determine table_type naturally, then inject it into Disk
+                    original_disk_init = Disk.__init__
+                    def mock_disk_init(self, table_type, storage_provider, start_sector=None, extended_layout=False, ec2_layout=False):
+                        # Force table_type to be 'gpt' from XML firmware="efi"
+                        return original_disk_init(self, 'gpt', storage_provider, start_sector, extended_layout, ec2_layout)
                     
-                    # Explicitly verify root partition got ID 1
-                    assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
+                    with patch.object(Disk, '__init__', mock_disk_init):
+                        bootloader_config = Mock()
+                        bootloader_config.get_boot_cmdline.return_value = 'boot_cmdline'
+                        mock_create_boot_loader_config.return_value.__enter__.return_value = bootloader_config
+                        mock_exists.return_value = True
+
+                        description = XMLDescription('../../test/data/example_ec2_layout.xml')
+                        disk_builder = DiskBuilder(
+                            XMLState(description.load()), 'target_dir', 'root_dir'
+                        )
+                        # ec2_layout should be True from XML, don't override it
+
+                        with patch('builtins.open'):
+                            disk_builder.create_disk()
+
+                        # Verify EC2 layout was enabled
+                        assert ec2_layout_called == True, "set_ec2_layout should have been called with True"
+                        
+                        # Explicitly verify root partition got ID 1
+                        assert root_partition_id == 1, f"Root partition should get ID 1, got {root_partition_id}"
 
     def _get_disk_instance(self) -> Mock:
         disk = Mock()
