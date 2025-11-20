@@ -1654,6 +1654,15 @@ div {
                 ]
             ]
         ]
+        >> sch:pattern [ id = "ec2_part_layout_no_root_clone"
+            sch:rule [
+                context = "type[@ec2_part_layout='true' and @root_clone]"
+                sch:assert [
+                    test = "false()"
+                    "ec2_part_layout cannot be used with root_clone: they are mutually exclusive"
+                ]
+            ]
+        ]
     k.type.bootpartsize.attribute =
         ## For images with a separate boot partition this attribute
         ## specifies the size in MB. If not set the min bootpart

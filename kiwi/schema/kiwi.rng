@@ -2431,6 +2431,11 @@ the partition table.</a:documentation>
           <sch:assert test="false()">ec2_part_layout cannot be used with spare_part_is_last: they are mutually exclusive</sch:assert>
         </sch:rule>
       </sch:pattern>
+      <sch:pattern id="ec2_part_layout_no_root_clone">
+        <sch:rule context="type[@ec2_part_layout='true' and @root_clone]">
+          <sch:assert test="false()">ec2_part_layout cannot be used with root_clone: they are mutually exclusive</sch:assert>
+        </sch:rule>
+      </sch:pattern>
     </define>
     <define name="k.type.bootpartsize.attribute">
       <attribute name="bootpartsize">

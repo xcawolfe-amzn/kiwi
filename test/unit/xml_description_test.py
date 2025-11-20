@@ -375,6 +375,12 @@ class TestSchema:
         with raises(KiwiDescriptionInvalid):
             description.load()
 
+    def test_ec2_part_layout_with_root_clone_conflict(self):
+        """Test that ec2_part_layout cannot be used with root_clone"""
+        description = XMLDescription('../data/example_ec2_part_layout_with_root_clone_conflict.xml')
+        with raises(KiwiDescriptionInvalid):
+            description.load()
+
     def test_ec2_layout_valid(self):
         """Test that ec2_layout attribute can be used without conflicts"""
         description = XMLDescription('../data/example_ec2_layout.xml')
