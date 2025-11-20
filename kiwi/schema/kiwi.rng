@@ -2408,8 +2408,8 @@ the partition table.</a:documentation>
         <sch:param name="types" value="oem"/>
       </sch:pattern>
     </define>
-    <define name="k.type.ec2_part_layout.attribute">
-      <attribute name="ec2_part_layout">
+    <define name="k.type.ec2_layout.attribute">
+      <attribute name="ec2_layout">
         <a:documentation>Specify if the disk layout should follow EC2 conventions:
 - Root partition is created last but numbered as partition 1
 - Root filesystem can expand to fill remaining disk space
