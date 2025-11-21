@@ -1166,7 +1166,7 @@ class DiskBuilder:
                 system_boot = filesystem
         return system_boot, system_efi
 
-    def _build_and_map_disk_partitions(
+    def _build_and_map_disk_partitions(  # noqa: C901
         self, disk: Disk, disksize_mbytes: float
     ) -> Dict:
         disk.wipe()
