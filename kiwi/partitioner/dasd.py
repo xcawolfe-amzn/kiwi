@@ -61,7 +61,7 @@ class PartitionerDasd(PartitionerBase):
         """
         is_root = name in ['p.lxroot', 'p.lxlvm', 'p.lxraid']
         partition_id = self.get_next_id(is_root)
-        
+
         fdasd_input = Temporary().new_file()
         with open(fdasd_input.name, 'w') as partition:
             log.debug(
@@ -86,7 +86,7 @@ class PartitionerDasd(PartitionerBase):
             # are not able to detect real errors with the fdasd operation at
             # that point.
             log.debug('potential fdasd errors were ignored')
-        
+
         return partition_id
 
     def set_uuid(self, partition_id: int, uuid: str) -> None:

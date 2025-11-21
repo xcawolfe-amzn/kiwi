@@ -69,11 +69,11 @@ class PartitionerMsDos(PartitionerBase):
         :rtype: int
         """
         is_root = name in ['p.lxroot', 'p.lxlvm', 'p.lxraid']
-        
+
         if self.extended_layout:
             # Check current partition_id to determine logic path (for backward compatibility)
             current_id = self.partition_id
-            
+
             if current_id < 3:
                 partition_id = self.get_next_id(is_root)
                 self._create_primary(name, mbsize, type_name, flags, partition_id)
@@ -89,7 +89,7 @@ class PartitionerMsDos(PartitionerBase):
         else:
             partition_id = self.get_next_id(is_root)
             self._create_primary(name, mbsize, type_name, flags, partition_id)
-        
+
         return partition_id
 
     def set_flag(self, partition_id: int, flag_name: str) -> None:
@@ -183,7 +183,7 @@ class PartitionerMsDos(PartitionerBase):
         if partition_id is None:
             self.partition_id += 1
             partition_id = self.partition_id
-            
+
         fdisk_input = Temporary().new_file()
         if partition_id == 1 and self.start_sector:
             if self.start_sector > self.default_start and mbsize != 'all_free':
@@ -215,7 +215,7 @@ class PartitionerMsDos(PartitionerBase):
         if partition_id is None:
             self.partition_id += 1
             partition_id = self.partition_id
-            
+
         fdisk_input = Temporary().new_file()
         with open(fdisk_input.name, 'w') as partition:
             log.debug(
@@ -240,7 +240,7 @@ class PartitionerMsDos(PartitionerBase):
         if partition_id is None:
             self.partition_id += 1
             partition_id = self.partition_id
-            
+
         fdisk_input = Temporary().new_file()
         with open(fdisk_input.name, 'w') as partition:
             log.debug(

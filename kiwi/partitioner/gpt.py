@@ -65,7 +65,7 @@ class PartitionerGpt(PartitionerBase):
         """
         is_root = name in ['p.lxroot', 'p.lxlvm', 'p.lxraid']
         partition_id = self.get_next_id(is_root)
-        
+
         if mbsize == 'all_free':
             partition_end = '0'
         else:
@@ -90,7 +90,7 @@ class PartitionerGpt(PartitionerBase):
         if flags:
             for flag_name in flags:
                 self.set_flag(partition_id, flag_name)
-        
+
         return partition_id
 
     def set_flag(self, partition_id: int, flag_name: str) -> None:
