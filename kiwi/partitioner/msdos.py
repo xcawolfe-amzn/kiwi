@@ -178,6 +178,8 @@ class PartitionerMsDos(PartitionerBase):
         """
         Create primary msdos partition
         """
+        # Use sequential counter instead of get_next_id() because MBR partitioning
+        # requires specific numbering: primaries use 1-4, logicals use 5+ sequentially
         if partition_id is None:
             self.partition_id += 1
             partition_id = self.partition_id
@@ -209,6 +211,7 @@ class PartitionerMsDos(PartitionerBase):
         """
         Create extended msdos partition
         """
+        # Extended partition takes next primary slot (1-4), not gap-filled ID
         if partition_id is None:
             self.partition_id += 1
             partition_id = self.partition_id
@@ -232,6 +235,8 @@ class PartitionerMsDos(PartitionerBase):
         """
         Create logical msdos partition
         """
+        # Logical partitions MUST be numbered sequentially starting from 5
+        # get_next_id() would break this by filling gaps in primary range (1-4)
         if partition_id is None:
             self.partition_id += 1
             partition_id = self.partition_id
