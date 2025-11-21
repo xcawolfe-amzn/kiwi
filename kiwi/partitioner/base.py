@@ -97,15 +97,13 @@ class PartitionerBase:
             if self.partition_id == 0:
                 self.partition_id = 1
             self.partition_id = 1  # Always set current ID to 1 for root
-            return 1
         elif self.ec2_part_layout:
             self.partition_id += 1
             while self.partition_id in self.reserved_ids:
                 self.partition_id += 1
-            return self.partition_id
         else:
             self.partition_id += 1
-            return self.partition_id
+        return self.partition_id
 
     def create(
         self, name: str, mbsize: int, type_name: str, flags: List[str] = []
