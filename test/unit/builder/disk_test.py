@@ -1960,19 +1960,6 @@ class TestDiskBuilder:
         disk.storage_provider = provider
         disk.partitioner = partitioner
         return disk
-        )
-        disk.get_device = Mock(
-            return_value=self.device_map
-        )
-        provider.get_device = Mock(
-            return_value='/dev/some-loop'
-        )
-        partitioner.get_id = Mock(
-            return_value=1
-        )
-        disk.storage_provider = provider
-        disk.partitioner = partitioner
-        return disk
 
     @patch('kiwi.storage.disk.RuntimeConfig')
     @patch('kiwi.builder.disk.RuntimeConfig')
