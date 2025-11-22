@@ -5,7 +5,6 @@ Test to verify EC2 layout partition numbering logic
 """
 
 import unittest
-from unittest.mock import Mock
 
 from kiwi.partitioner.base import PartitionerBase
 
@@ -19,7 +18,7 @@ class MockPartitioner(PartitionerBase):
     def __init__(self):
         super().__init__(MockDeviceProvider())
         self.created_partitions = []
-    
+
     def create(self, name, mbsize, type_name, flags=None):
         is_root = name in ['p.lxroot', 'p.lxlvm', 'p.lxraid']
         partition_id = self.get_next_id(is_root)
@@ -32,12 +31,12 @@ class TestEC2Layout(unittest.TestCase):
     def test_normal_layout(self):
         """Test normal partition layout without EC2 mode"""
         partitioner = MockPartitioner()
-        
+
         # Create partitions in typical order
         partitioner.create('p.UEFI', 100, 't.efi')
         partitioner.create('p.lxboot', 500, 't.linux')
         partitioner.create('p.lxroot', 'all_free', 't.linux')
-        
+
         expected = [('p.UEFI', 1), ('p.lxboot', 2), ('p.lxroot', 3)]
         self.assertEqual(partitioner.created_partitions, expected)
 
@@ -45,12 +44,12 @@ class TestEC2Layout(unittest.TestCase):
         """Test EC2 layout with root partition getting ID 1"""
         partitioner = MockPartitioner()
         partitioner.set_ec2_part_layout(True)
-        
+
         # Create partitions in EC2 order (root created last but should get ID 1)
         partitioner.create('p.UEFI', 100, 't.efi')
         partitioner.create('p.lxboot', 500, 't.linux')
         partitioner.create('p.lxroot', 'all_free', 't.linux')
-        
+
         expected = [('p.UEFI', 2), ('p.lxboot', 3), ('p.lxroot', 1)]
         self.assertEqual(partitioner.created_partitions, expected)
 
@@ -58,13 +57,13 @@ class TestEC2Layout(unittest.TestCase):
         """Test EC2 layout with multiple partitions"""
         partitioner = MockPartitioner()
         partitioner.set_ec2_part_layout(True)
-        
+
         # Create partitions: EFI, boot, swap, root
         partitioner.create('p.UEFI', 100, 't.efi')
         partitioner.create('p.lxboot', 500, 't.linux')
         partitioner.create('p.swap', 1024, 't.swap')
         partitioner.create('p.lxroot', 'all_free', 't.linux')
-        
+
         expected = [('p.UEFI', 2), ('p.lxboot', 3), ('p.swap', 4), ('p.lxroot', 1)]
         self.assertEqual(partitioner.created_partitions, expected)
 
@@ -72,10 +71,10 @@ class TestEC2Layout(unittest.TestCase):
         """Test EC2 layout with LVM root partition"""
         partitioner = MockPartitioner()
         partitioner.set_ec2_part_layout(True)
-        
+
         partitioner.create('p.UEFI', 100, 't.efi')
         partitioner.create('p.lxlvm', 'all_free', 't.lvm')  # LVM root should get ID 1
-        
+
         expected = [('p.UEFI', 2), ('p.lxlvm', 1)]
         self.assertEqual(partitioner.created_partitions, expected)
 
@@ -83,10 +82,10 @@ class TestEC2Layout(unittest.TestCase):
         """Test EC2 layout with RAID root partition"""
         partitioner = MockPartitioner()
         partitioner.set_ec2_part_layout(True)
-        
+
         partitioner.create('p.UEFI', 100, 't.efi')
         partitioner.create('p.lxraid', 'all_free', 't.raid')  # RAID root should get ID 1
-        
+
         expected = [('p.UEFI', 2), ('p.lxraid', 1)]
         self.assertEqual(partitioner.created_partitions, expected)
 
@@ -94,10 +93,10 @@ class TestEC2Layout(unittest.TestCase):
         """Test that reserved IDs are properly tracked"""
         partitioner = MockPartitioner()
         partitioner.set_ec2_part_layout(True)
-        
+
         # Verify that ID 1 is reserved
         self.assertIn(1, partitioner.reserved_ids)
-        
+
         # Create non-root partition - should skip ID 1
         partitioner.create('p.UEFI', 100, 't.efi')
         self.assertEqual(partitioner.created_partitions[0][1], 2)
